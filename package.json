@@ -25,6 +25,7 @@
    "scripts": {
       "build": "tsc",
       "dev": "ts-node src/index.ts",
-      "start": "echo 4"
+      "start": "echo Bot online.",
+      "post": "node build/index.js"
    }
 }
