@@ -26,6 +26,7 @@
       "build": "tsc",
       "dev": "ts-node src/index.ts",
       "start": "echo Bot online.",
-      "post": "node build/index.js"
+      "post": "node build/index.js",
+      "delete": "node build/delete.js"
    }
 }
