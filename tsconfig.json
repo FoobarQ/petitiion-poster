@@ -13,7 +13,7 @@
       "sourceMap": true,
       "skipLibCheck": true,    
       "typeRoots": [
-         "."
+         "./src"
        ]
    }
 }
