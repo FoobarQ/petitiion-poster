@@ -14,9 +14,9 @@ export class Petition {
   @Column()
   signature_count: number;
 
-  @Column()
+  @Column({default: false})
   response: boolean;
 
-  @Column()
+  @Column({default: false})
   debate: boolean;
 }
