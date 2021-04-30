@@ -47,6 +47,8 @@ createConnection({
           .then(response => response.json())
           .then(data => data.attributes)
           .then(attributes => {
+            console.log(petition.id);
+            console.log(attributes);
             const {
               government_response, 
               debate,
