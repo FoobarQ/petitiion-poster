@@ -81,7 +81,9 @@ createConnection({
               id: petition.id,
             }, petition)
           }).then(() => console.log(`Petition ${petition.id} updated.`))
-          .catch(() => console.error("it's peak"));
+          .catch((error) => {
+            console.error(error);
+            console.error("it's peak")});
         }
 
     } catch (notFoundError) {
