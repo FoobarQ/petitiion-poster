@@ -86,11 +86,11 @@ createConnection({
               console.log("  Success.");
               console.log(`Saved a new petition with id: ${pet.id}\n\n`);
               tweetsMade++;
-              if (tweetsMade >= TWEET_LIMIT) {
-                console.log("Process finished successfully.");
-                return 0;
-              }
             });
+          if (tweetsMade >= TWEET_LIMIT) {
+            console.log("Process finished successfully.");
+            return 0;
+          }
         }
       }
       page++;

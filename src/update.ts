@@ -95,15 +95,15 @@ createConnection({
           .then(() => {
             console.log(`Petition ${petition.id} updated.`);
             updatesMade++;
-            if (updatesMade >= UPDATE_LIMIT) {
-              console.log("Process finished successfully");
-              return 0;
-            }
           })
           .catch((error) => {
             console.error(error);
             console.error("it's peak");
           });
+        if (updatesMade >= UPDATE_LIMIT) {
+          console.log("Process finished successfully");
+          return 0;
+        }
       }
       console.log("\nPetitions updated.");
       console.log("Process finished successfully");
