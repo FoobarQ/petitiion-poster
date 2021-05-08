@@ -31,7 +31,7 @@
       "build": "tsc",
       "dev": "ts-node src/create.ts",
       "start": "echo Bot online.",
-      "create": "node build/create.js",
+      "post": "node build/create.js",
       "delete": "node build/delete.js",
       "update": "node build/update.js"
    }
