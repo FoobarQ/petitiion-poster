@@ -1,17 +1,18 @@
 import "reflect-metadata";
 import { createConnection, LessThan } from "typeorm";
 import { Petition } from "./entity/Petition";
+const request = require("request-promise");
 
-const Twitter = require("twitter-lite");
-
-const client = new Twitter({
-  subdomain: "api",
-  version: "1.1",
-  consumer_key: process.env.TWITTER_KEY,
-  consumer_secret: process.env.TWITTER_SECRET_KEY,
-  access_token_key: process.env.TWITTER_ACCESS_TOKEN,
-  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-});
+const options = {
+  method: "POST",
+  url: "https://api.twitter.com/1.1/statuses/destroy.json",
+  oauth: {
+    consumer_key: process.env.TWITTER_KEY,
+    consumer_secret: process.env.TWITTER_SECRET_KEY,
+    token: process.env.TWITTER_ACCESS_TOKEN,
+    token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  },
+};
 
 createConnection({
   type: "postgres",
@@ -52,9 +53,12 @@ createConnection({
 
 async function deleteTweet(tweetId: string) {
   console.log(`Deleting tweet ${tweetId}...`);
-  const previous = await client
-    .get(`statuses/destroy/${tweetId}.json`)
-    .then((response) => response.json())
-    .then((data) => data.in_reply_to_status_id_str);
+  let previous;
+  options.url = `https://api.twitter.com/1.1/statuses/destroy/${tweetId}.json`;
+  await request(options, function (error, response) {
+    if (error) throw new Error(error);
+    previous = JSON.parse(response.body).in_reply_to_status_id_str;
+  });
+
   previous ? deleteTweet(previous) : console.log("  Deleted.");
 }
