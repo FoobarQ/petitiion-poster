@@ -64,15 +64,15 @@ createConnection({
             const tweets = [];
 
             if (!petition.response && government_response) {
-              let tweetBody = `Government responded on ${government_response.responded_on}\n\n`;
-              tweetBody += `Summary:  ${government_response.summary}\n\n`;
-              tweetBody += `For more info, visit the link above.`;
+              let tweetBody = `Govt. response from ${government_response.responded_on}:\n\n`;
+              tweetBody += `"${government_response.summary}"\n\n`;
+              tweetBody += `Click the link above for more info.`;
               tweets.push(tweetBody);
               petition.response = true;
             }
 
             if (!petition.debate && debate) {
-              let tweetBody = `Government debated on ${debate.debated_on}\n\n`;
+              let tweetBody = `Debated on ${debate.debated_on}\n\n`;
               tweetBody += `Watch here: ${debate.video_url}\n`;
               tweets.push(tweetBody);
               petition.debate = true;
