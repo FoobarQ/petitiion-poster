@@ -29,9 +29,9 @@
    },
    "scripts": {
       "build": "tsc",
-      "dev": "ts-node src/index.ts",
+      "dev": "ts-node src/create.ts",
       "start": "echo Bot online.",
-      "post": "node build/index.js",
+      "create": "node build/create.js",
       "delete": "node build/delete.js",
       "update": "node build/update.js"
    }
