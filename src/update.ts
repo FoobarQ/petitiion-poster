@@ -2,7 +2,6 @@ import "reflect-metadata";
 import { createConnection, LessThan } from "typeorm";
 import { Petition } from "./entity/Petition";
 import fetch from "node-fetch";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "node:constants";
 const request = require("request-promise");
 
 const petitionUrl = process.env.PETITION_URL;

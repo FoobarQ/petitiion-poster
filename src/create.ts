@@ -3,17 +3,22 @@ import { createConnection } from "typeorm";
 import { Petition } from "./entity/Petition";
 import fetch from "node-fetch";
 
-const Twitter = require("twitter-lite");
+const request = require("request-promise");
 const petitionUrl = process.env.PETITION_URL;
 
-const client = new Twitter({
-  subdomain: "api",
-  version: "1.1",
-  consumer_key: process.env.TWITTER_KEY,
-  consumer_secret: process.env.TWITTER_SECRET_KEY,
-  access_token_key: process.env.TWITTER_ACCESS_TOKEN,
-  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-});
+const options = {
+  method: "POST",
+  url: "https://api.twitter.com/1.1/statuses/update.json",
+  oauth: {
+    consumer_key: process.env.TWITTER_KEY,
+    consumer_secret: process.env.TWITTER_SECRET_KEY,
+    token: process.env.TWITTER_ACCESS_TOKEN,
+    token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  },
+  form: {
+    status: "@UKPetitionPosts Computer says no",
+  },
+};
 
 const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
@@ -146,18 +151,15 @@ async function composeTweet(petition: PetitionInterface) {
   return tweet;
 }
 
-async function postTweet(tweet: string): Promise<string> {
+async function postTweet(tweet: string) {
   let tweetConfirmation;
-  await client
-    .get("account/verify_credentials")
-    .then(client.post("statuses/update", { status: tweet }))
-    .then((data) => {
-      tweetConfirmation = data;
-    })
-    .catch((error) => console.error(error));
-  console.log({ id: tweetConfirmation.status.id });
-  console.log({ id_str: tweetConfirmation.status.id_str });
-  return tweetConfirmation.status.id_str;
+  options.form.status = tweet;
+  await request(options, function (error, response) {
+    if (error) throw new Error(error);
+    tweetConfirmation = JSON.parse(response.body).id_str;
+  });
+
+  return tweetConfirmation;
 }
 
 async function getPetitions(
