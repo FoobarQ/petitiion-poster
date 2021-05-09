@@ -33,7 +33,7 @@ createConnection({
     },
   },
   entities: [__dirname + "/entity/*"],
-  synchronize: true,
+  synchronize: true, // I don't like it, but it's needed to keep secrets secret
 })
   .then(async (connection) => {
     let updatesMade = 0;
