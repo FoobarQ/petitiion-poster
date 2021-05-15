@@ -140,7 +140,7 @@ async function composeTweet(petition: PetitionInterface) {
     }
   }
   let tweet = `Petition: ${action}`;
-  tweet += `\n\n${status}.`;
+  tweet += status ? `\n\n${status}.` : "";
   tweet += `\nDeadline: ${deadline.toLocaleDateString("en-GB", {
     timeZone: "UTC",
   })}`;
@@ -191,9 +191,7 @@ function hashtagify(input: string) {
   return `#${x.join("")} `;
 }
 
-async function fixResponse(
-  data
-): Promise<{
+async function fixResponse(data): Promise<{
   links: Links;
   petitions: PetitionInterface[];
 }> {
