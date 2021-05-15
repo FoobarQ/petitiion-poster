@@ -1,8 +1,7 @@
 import "reflect-metadata";
-import { createConnection, LessThan } from "typeorm";
+import { createConnection } from "typeorm";
 import { Petition } from "./entity/Petition";
 import fetch from "node-fetch";
-import { resolve } from "node:path";
 const request = require("request-promise");
 
 const petitionUrl = process.env.PETITION_URL;
@@ -82,10 +81,10 @@ createConnection({
                   petition.debate = true;
                 }
 
-                if (tweets) {
-                  resolve(tweets);
+                if (tweets.length > 0) {
+                  return resolve(tweets);
                 } else {
-                  reject(`this petition has no updates`);
+                  return reject(`it has no updates`);
                 }
               })
           )
