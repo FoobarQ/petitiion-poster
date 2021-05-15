@@ -78,7 +78,11 @@ createConnection({
               petition.debate = true;
             }
 
-            return tweets;
+            if (tweets) {
+              return tweets;
+            }
+
+            return Promise.reject(`this petition has no updates`);
           })
           .then((tweets) => updateTweet(petition.tweetId, tweets))
           .then((tweetId) => {
@@ -96,8 +100,9 @@ createConnection({
             updatesMade++;
           })
           .catch((error) => {
-            console.error(error);
-            console.error("it's peak");
+            console.error(
+              `Update failed for Petition (${petition.id}) because ${error}`
+            );
           });
         if (updatesMade >= UPDATE_LIMIT) {
           console.log("Process finished successfully");
