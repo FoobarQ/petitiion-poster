@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { createConnection, LessThan } from "typeorm";
 import { Petition } from "./entity/Petition";
 import fetch from "node-fetch";
+import { resolve } from "node:path";
 const request = require("request-promise");
 
 const petitionUrl = process.env.PETITION_URL;
@@ -56,30 +57,38 @@ createConnection({
         )
           .then((response) => response.json())
           .then((data) => data.data.attributes)
-          .then((attributes) => {
-            const { government_response, debate, signature_count } = attributes;
+          .then(
+            (attributes) =>
+              new Promise<string[]>((resolve, reject) => {
+                const { government_response, debate, signature_count } =
+                  attributes;
 
-            petition.signature_count = signature_count;
+                petition.signature_count = signature_count;
 
-            const tweets = [];
+                const tweets = [];
 
-            if (!petition.response && government_response) {
-              let tweetBody = `Govt. response from ${government_response.responded_on}:\n\n`;
-              tweetBody += `"${government_response.summary}"\n\n`;
-              tweetBody += `Click the link above for more info.`;
-              tweets.push(tweetBody);
-              petition.response = true;
-            }
+                if (!petition.response && government_response) {
+                  let tweetBody = `Govt. response from ${government_response.responded_on}:\n\n`;
+                  tweetBody += `"${government_response.summary}"\n\n`;
+                  tweetBody += `Click the link above for more info.`;
+                  tweets.push(tweetBody);
+                  petition.response = true;
+                }
 
-            if (!petition.debate && debate) {
-              let tweetBody = `Debated on ${debate.debated_on}\n\n`;
-              tweetBody += `Watch here: ${debate.video_url}\n`;
-              tweets.push(tweetBody);
-              petition.debate = true;
-            }
+                if (!petition.debate && debate) {
+                  let tweetBody = `Debated on ${debate.debated_on}\n\n`;
+                  tweetBody += `Watch here: ${debate.video_url}\n`;
+                  tweets.push(tweetBody);
+                  petition.debate = true;
+                }
 
-            return tweets;
-          })
+                if (tweets) {
+                  resolve(tweets);
+                } else {
+                  reject(`this petition has no updates`);
+                }
+              })
+          )
           .then((tweets) => updateTweet(petition.tweetId, tweets))
           .then((tweetId) => {
             petition.tweetId = tweetId;
@@ -96,8 +105,9 @@ createConnection({
             updatesMade++;
           })
           .catch((error) => {
-            console.error(error);
-            console.error("it's peak");
+            console.error(
+              `Update failed for Petition (${petition.id}) because ${error}`
+            );
           });
         if (updatesMade >= UPDATE_LIMIT) {
           console.log("Process finished successfully");
