@@ -140,7 +140,7 @@ async function composeTweet(petition: PetitionInterface) {
     }
   }
   let tweet = `Petition: ${action}`;
-  tweet += status ? `\n\n${status}.` : "";
+  tweet += status ? `\n\n${status}.` : "\n\n";
   tweet += `\nDeadline: ${deadline.toLocaleDateString("en-GB", {
     timeZone: "UTC",
   })}`;
