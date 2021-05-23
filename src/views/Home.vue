@@ -1,16 +1,20 @@
 <template>
   <div class="home" v-if="$store.state.status">
     <div>
-      <h1 >
-        <a  :href="link">{{ $store.state.petition.action }}</a>
+      <h1>
+        <a :href="link">{{ $store.state.petition.action }}</a>
       </h1>
       <div>
         <h2>by {{ $store.state.petition.creator_name }}</h2>
       </div>
     </div>
-    <LineChart />
+    <ChartLegend />
     <div class="green">
-      <HelloWorld :title="'Background'" :text="$store.state.petition.background" :continued="$store.state.petition.additional_details"/>
+      <HelloWorld
+        :title="'Background'"
+        :text="$store.state.petition.background"
+        :continued="$store.state.petition.additional_details"
+      />
     </div>
   </div>
 </template>
@@ -21,8 +25,9 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 import request from "request-promise";
 import LineChart from "@/components/LineChart.vue";
 import PieChart from "@/components/PieChart.vue";
-import {State, Getter} from 'vuex-class';
-import {AppState} from '@/store';
+import ChartLegend from "@/components/ChartLegend.vue";
+import { State, Getter } from "vuex-class";
+import { AppState } from "@/store";
 
 interface Debate {
   debated_on: string; //datetime
@@ -115,14 +120,15 @@ interface Links {
     LineChart,
     HelloWorld,
     PieChart,
+    ChartLegend,
   },
 })
 export default class Home extends Vue {
-  @Getter('link')
+  @Getter("link")
   link!: string;
 
   async mounted() {
-    await this.$store.dispatch('setPetitionId', this.$route.params.id);
+    await this.$store.dispatch("setPetitionId", this.$route.params.id);
     console.log("yahteet");
     setInterval(this.handlePetitionResponse, 5 * 1000);
   }
@@ -133,7 +139,7 @@ export default class Home extends Vue {
       url: `${this.link}.json`,
     };
     const whatever = await request(options);
-    this.$store.commit('setPetition', JSON.parse(whatever).data.attributes);
+    this.$store.commit("setPetition", JSON.parse(whatever).data.attributes);
   }
 }
 </script>
@@ -144,23 +150,19 @@ a {
   color: #080;
 }
 
+h1 + div {
+  position: relative;
+  background: #080;
+  color: white;
+  bottom: 0px;
+  margin: 0;
 
-h1 + div{
-    position: relative;
-    background: #080;
-    color: white;
-    bottom: 0px;
+  h2 {
     margin: 0;
-
-    h2 {
-      margin: 0;
-    }
   }
-
+}
 
 .home > div {
   position: sticky;
 }
-
-
 </style>

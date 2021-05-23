@@ -55,7 +55,7 @@ export default class PieChart extends Vue {
     ],
     chart: {
       height: 800,
-      width: 200
+      width: 200,
     },
     plotOptions: {
       line: {
@@ -124,7 +124,7 @@ export default class PieChart extends Vue {
 
   setPieChart(i: string) {
     this.pieChart = i;
-    this.updatePieChart()
+    this.updatePieChart();
   }
 
   updatePieChart() {
