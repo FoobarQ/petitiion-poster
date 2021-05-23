@@ -1,12 +1,13 @@
 <template>
+  <div>
   <chart :options="chartOptions"></chart>
+  <button @click="addLine('North West', 'signatures_by_region')">North West</button>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
-import request from "request-promise";
-import { Getter } from "vuex-class";
 
 const seconds = 1000;
 @Component({
@@ -67,6 +68,7 @@ export default class LineChart extends Vue {
 
   async update_function() {
     for (const key in this.keyPairs) {
+      console.log(key+" "+this.getSignatureCount(key))
       this.chartOptions.series[this.keyPairs[key]].data.push(this.getSignatureCount(key));
     }
   }
@@ -74,6 +76,7 @@ export default class LineChart extends Vue {
   addLine(name: string, type: string) {
     this.keyPairs[type+":"+name] = this.chartOptions.series.length;
     this.chartOptions.series.push({
+      data: [],
       pointStart: Date.now(),
       pointInterval: 5 * seconds,
       name
@@ -86,8 +89,9 @@ export default class LineChart extends Vue {
     }
     const [type, name] = id.split(":");
     let searchList = [...this.$store.state.petition[type]];
-    let i = Math.round(searchList.length / 2);
+    
     while (searchList.length > 3) {
+      const i = Math.round(searchList.length / 2);
       if (searchList[i].name === name) {
         return searchList[i].signature_count
       } else if (searchList[i].name < name) {
