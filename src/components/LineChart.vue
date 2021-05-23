@@ -74,6 +74,9 @@ export default class LineChart extends Vue {
   }
 
   addLine(name: string, type: string) {
+    if (this.keyPairs[type+":"+name] !== undefined) {
+      return;
+    }
     this.keyPairs[type+":"+name] = this.chartOptions.series.length;
     this.chartOptions.series.push({
       data: [],

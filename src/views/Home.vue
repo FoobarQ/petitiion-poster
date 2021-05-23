@@ -1,16 +1,16 @@
 <template>
-  <div class="home">
+  <div class="home" v-if="$store.state.status">
     <div>
-      <h1>
-        <a :if="$store.state.petition" :href="link">{{ $store.state.petition.action }}</a>
+      <h1 >
+        <a  :href="link">{{ $store.state.petition.action }}</a>
       </h1>
       <div>
-        <h2 :if="$store.state.petition">by {{ $store.state.petition.creator_name }}</h2>
+        <h2>by {{ $store.state.petition.creator_name }}</h2>
       </div>
     </div>
     <LineChart />
     <div class="green">
-      <HelloWorld :if="$store.state.petition" :title="'Background'" :text="$store.state.petition.background" :continued="$store.state.petition.additional_details"/>
+      <HelloWorld :title="'Background'" :text="$store.state.petition.background" :continued="$store.state.petition.additional_details"/>
     </div>
   </div>
 </template>
@@ -118,26 +118,12 @@ interface Links {
   },
 })
 export default class Home extends Vue {
-  @Getter('action')
-  action!: string;
-
-  @Getter('background')
-  background!: string;
-
-  @Getter('additional_details')
-  additional_details!: string;
-
-  @Getter('petitionId')
-  petitionId!: string;
-
   @Getter('link')
   link!: string;
 
-  @Getter('creator_name')
-  creator_name!: string;
-
   async mounted() {
     await this.$store.dispatch('setPetitionId', this.$route.params.id);
+    console.log("yahteet");
     setInterval(this.handlePetitionResponse, 5 * 1000);
   }
 

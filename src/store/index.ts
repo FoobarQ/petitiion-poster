@@ -13,6 +13,8 @@ function titleify(input: string) {
 export default new Vuex.Store({
   state: {
     petitionId: 0,
+    petition: {},
+    status: false,
   },
   mutations: {
     setPetition: (state: AppState, petition) => {
@@ -46,6 +48,7 @@ export default new Vuex.Store({
       context.commit("setPetitionId", petitionId);
       handlePetitionResponse(context.getters.link).then((petition) => {
         context.commit("setPetition", petition);
+        context.state.status = true;
       });
     },
   },
@@ -53,9 +56,10 @@ export default new Vuex.Store({
 });
 
 export interface AppState {
-  petition?: Attributes;
+  petition: Attributes | any;
   petitionId: number;
   link?: string;
+  status: boolean;
 }
 
 async function handlePetitionResponse(url: string): Promise<Attributes> {
