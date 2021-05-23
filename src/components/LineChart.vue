@@ -6,6 +6,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
 import request from "request-promise";
+import { Getter } from "vuex-class";
 
 const seconds = 1000;
 @Component({
@@ -14,13 +15,12 @@ const seconds = 1000;
   },
 })
 export default class LineChart extends Vue {
-  @Prop() private petitionId!: number;
-  chartOptions = {
+  chartOptions: any  = {
     series: [
       {
         name: "No. Signatures",
         color: "#080",
-        data: [0], // sample data.
+        data: [], // sample data.
         pointStart: Date.now(),
         pointInterval: 5 * seconds,
       },
@@ -54,35 +54,57 @@ export default class LineChart extends Vue {
     },
   };
 
+  keyPairs: {[key: string] : number}= {
+    "signature_count": 0
+  }
   async mounted() {
-    const petition = await this.handlePetitionResponse();
-    this.chartOptions.series[0].data = [petition.signature_count];
-    this.chartOptions.yAxis.softMin = petition.signature_count - 10;
+    this.chartOptions.series[0].data = [this.$store.state.petition.signature_count];
+    this.chartOptions.yAxis.softMin = this.$store.state.petition.signature_count - 10;
     this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
-
     setInterval(this.update_function, 5 * seconds);
   }
 
-  async handlePetitionResponse() {
-    const options = {
-      method: "GET",
-      url: `https://petition.parliament.uk/petitions/${this.petitionId}.json`,
-    };
-    const whatever = await request(options);
-    const petition = JSON.parse(whatever).data.attributes;
-    return petition;
-  }
 
   async update_function() {
-    const { signature_count } = await this.handlePetitionResponse();
-    this.chartOptions.series[0].data.push(signature_count);
-    //this.chartOptions.series[0].pointStart = this.chartOptions.series[0].pointStart - 2 * seconds;
+    for (const key in this.keyPairs) {
+      this.chartOptions.series[this.keyPairs[key]].data.push(this.getSignatureCount(key));
+    }
   }
 
-  titleify(input: string) {
-    let x = input.split(" ");
-    x = x.map((value) => value.slice(0, 1).toUpperCase() + value.slice(1));
-    return `${x.join(" ")}`;
+  addLine(name: string, type: string) {
+    this.keyPairs[type+":"+name] = this.chartOptions.series.length;
+    this.chartOptions.series.push({
+      pointStart: Date.now(),
+      pointInterval: 5 * seconds,
+      name
+    })
   }
+
+  getSignatureCount(id: string): number {
+    if (!id.includes(":")) {
+      return this.$store.state.petition.signature_count
+    }
+    const [type, name] = id.split(":");
+    let searchList = [...this.$store.state.petition[type]];
+    let i = Math.round(searchList.length / 2);
+    while (searchList.length > 3) {
+      if (searchList[i].name === name) {
+        return searchList[i].signature_count
+      } else if (searchList[i].name < name) {
+        searchList = searchList.slice(0, i)
+      } else {
+        searchList = searchList.slice(i)
+      }
+    }
+
+    for (const item of searchList) {
+      if (item.name === name) {
+        return item.signature_count;
+      }
+    }
+
+    return -1;
+  }
+  
 }
 </script>

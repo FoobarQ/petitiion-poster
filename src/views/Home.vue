@@ -2,15 +2,15 @@
   <div class="home">
     <div>
       <h1>
-        <a :href="link">{{ action }}</a>
+        <a :if="$store.state.petition" :href="link">{{ $store.state.petition.action }}</a>
       </h1>
       <div>
-        <h2>by {{ creator_name }}</h2>
+        <h2 :if="$store.state.petition">by {{ $store.state.petition.creator_name }}</h2>
       </div>
     </div>
-    <LineChart :petitionId="petitionId" />
+    <LineChart />
     <div class="green">
-      <HelloWorld :title="'Background'" :text="background" :continued="additional_details"/>
+      <HelloWorld :if="$store.state.petition" :title="'Background'" :text="$store.state.petition.background" :continued="$store.state.petition.additional_details"/>
     </div>
   </div>
 </template>
@@ -21,6 +21,8 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 import request from "request-promise";
 import LineChart from "@/components/LineChart.vue";
 import PieChart from "@/components/PieChart.vue";
+import {State, Getter} from 'vuex-class';
+import {AppState} from '@/store';
 
 interface Debate {
   debated_on: string; //datetime
@@ -116,35 +118,36 @@ interface Links {
   },
 })
 export default class Home extends Vue {
-  action = "";
-  background = "";
-  additional_details = "";
-  petitionId = this.$route.params.id;
-  link = `https://petition.parliament.uk/petitions/${this.petitionId}`;
-  creator_name = "";
+  @Getter('action')
+  action!: string;
 
-  mounted() {
-    this.handlePetitionResponse().then((petition) => {
-      this.background = petition.background;
-      this.additional_details = petition.additional_details;
-      this.action = this.titleify(petition.action);
-      this.creator_name = petition.creator_name;
-    });
+  @Getter('background')
+  background!: string;
+
+  @Getter('additional_details')
+  additional_details!: string;
+
+  @Getter('petitionId')
+  petitionId!: string;
+
+  @Getter('link')
+  link!: string;
+
+  @Getter('creator_name')
+  creator_name!: string;
+
+  async mounted() {
+    await this.$store.dispatch('setPetitionId', this.$route.params.id);
+    setInterval(this.handlePetitionResponse, 5 * 1000);
   }
 
-  async handlePetitionResponse(): Promise<Attributes> {
+  async handlePetitionResponse(): Promise<void> {
     const options = {
       method: "GET",
       url: `${this.link}.json`,
     };
     const whatever = await request(options);
-    return JSON.parse(whatever).data.attributes;
-  }
-
-  titleify(input: string) {
-    let x = input.split(" ");
-    x = x.map((value) => value.slice(0, 1).toUpperCase() + value.slice(1));
-    return `${x.join(" ")}`;
+    this.$store.commit('setPetition', JSON.parse(whatever).data.attributes);
   }
 }
 </script>

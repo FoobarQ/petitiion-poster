@@ -42,6 +42,10 @@ interface Attributes {
   debate?: Debate;
   departments: Department[];
   topics: string[];
+  signatures_by_country: Country[];
+  signatures_by_constituency: Constituency[];
+  signatures_by_region: Region[];
+  other_parliamentary_business: any[];
 }
 
 interface Debate {
