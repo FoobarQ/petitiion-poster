@@ -8,7 +8,7 @@
         <h2>by {{ creator_name }}</h2>
       </div>
     </div>
-    <LineChart :petitionId="586559" />
+    <LineChart :petitionId="petitionId" />
     <div class="green">
       <HelloWorld :title="'Background'" :text="background" :continued="additional_details"/>
     </div>
@@ -119,7 +119,8 @@ export default class Home extends Vue {
   action = "";
   background = "";
   additional_details = "";
-  link = "https://petition.parliament.uk/petitions/586559";
+  petitionId = this.$route.params.id;
+  link = `https://petition.parliament.uk/petitions/${this.petitionId}`;
   creator_name = "";
 
   mounted() {
