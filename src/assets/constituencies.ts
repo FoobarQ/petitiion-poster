@@ -1,4 +1,4 @@
-interface Constituency {
+export interface Constituency {
   name: string;
   ons_code: string;
   region: string;
