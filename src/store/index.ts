@@ -15,6 +15,43 @@ export default new Vuex.Store({
     petitionId: 0,
     petition: {},
     status: false,
+    keyPairs: {
+      signature_count: 0,
+    },
+    chartOptions: {
+      series: [
+        {
+          name: "No. Signatures",
+          color: "#080",
+          data: [], // sample data.
+          pointStart: Date.now(),
+          pointInterval: 5 * 1000,
+        },
+      ],
+      xAxis: {
+        type: "datetime",
+        gridLineDashStyle: "dashed",
+        lineColor: "black",
+        lineWidth: "2",
+      },
+      yAxis: {
+        allowDecimals: false,
+        softMax: 10000,
+        softMin: 9000,
+        gridLineColor: "white",
+        visible: false,
+      },
+      plotOptions: {
+        line: {
+          marker: {
+            enabled: false,
+          },
+        },
+      },
+      title: {
+        text: "",
+      },
+    },
   },
   mutations: {
     setPetition: (state: AppState, petition) => {
@@ -60,6 +97,10 @@ export interface AppState {
   petitionId: number;
   link?: string;
   status: boolean;
+  keyPairs: {
+    [key: string]: number;
+  };
+  chartOptions: any;
 }
 
 async function handlePetitionResponse(url: string): Promise<Attributes> {
@@ -70,3 +111,7 @@ async function handlePetitionResponse(url: string): Promise<Attributes> {
   const whatever = await request(options);
   return JSON.parse(whatever).data.attributes;
 }
+
+/*keyPairs: { [key: string]: number } = {
+  signature_count: 0,
+};*/

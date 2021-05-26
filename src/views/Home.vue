@@ -1,5 +1,5 @@
 <template>
-  <div class="home" v-if="$store.state.status">
+  <div class="home" v-if="true">
     <div>
       <h1>
         <a :href="link">{{ $store.state.petition.action }}</a>
@@ -8,13 +8,8 @@
         <h2>by {{ $store.state.petition.creator_name }}</h2>
       </div>
     </div>
-    <ChartLegend />
-    <div class="green">
-      <HelloWorld
-        :title="'Background'"
-        :text="$store.state.petition.background"
-        :continued="$store.state.petition.additional_details"
-      />
+    <div class="components">
+      <chart-legend />
     </div>
   </div>
 </template>
@@ -129,8 +124,7 @@ export default class Home extends Vue {
 
   async mounted() {
     await this.$store.dispatch("setPetitionId", this.$route.params.id);
-    console.log("yahteet");
-    setInterval(this.handlePetitionResponse, 5 * 1000);
+    //console.log("yahteet");
   }
 
   async handlePetitionResponse(): Promise<void> {
@@ -162,7 +156,10 @@ h1 + div {
   }
 }
 
-.home > div {
-  position: sticky;
+.components {
+  display: flex;
+  height: 1500px;
 }
+
+
 </style>
