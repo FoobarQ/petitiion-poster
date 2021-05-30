@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chartOptions">
+  <div class="everything" v-if="chartOptions">
     <div class="legend">
       <template v-for="region of Object.keys(constituencies)">
         <div v-bind:key="region">
@@ -20,9 +20,6 @@
       </template>
     </div>
     <chart :options="chartOptions"></chart>
-    <button @click="addLine('North West', 'signatures_by_region')">
-      North West
-    </button>
   </div>
 </template>
 
@@ -58,7 +55,7 @@ interface Constituencies {
 })
 export default class ChartLegend extends Vue {
   constituencies: Constituencies = {
-    "East of England": { data: E, show: true },
+    "East of England": { data: E, show: false },
     "East Midlands": { data: EastMidlands, show: false },
     London: { data: London, show: false },
     "North East": { data: NE, show: false },
@@ -118,15 +115,15 @@ export default class ChartLegend extends Vue {
     this.chartOptions.series[0].data = [
       this.$store.state.petition.signature_count,
     ];
+    console.log(this.$store.state.petition.signature_count);
     this.chartOptions.yAxis.softMin =
       this.$store.state.petition.signature_count - 10;
     this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
-    setInterval(this.update_function, 10 * seconds);
+    //setInterval(this.update_function, 10 * seconds);
   }
 
   async update_function() {
     for (const key in this.keyPairs) {
-      console.log(key + " " + this.getSignatureCount(key));
       this.chartOptions.series[this.keyPairs[key]].data.push(
         this.getSignatureCount(key)
       );
@@ -151,16 +148,18 @@ export default class ChartLegend extends Vue {
       return this.$store.state.petition.signature_count;
     }
     const [type, name] = id.split(":");
-    let searchList = [...this.$store.state.petition[type]];
-    console.log(searchList[0])
-    while (searchList.length > 3) {
-      const i = Math.round(searchList.length / 2);
+    let searchList = this.$store.state.petition[type];
+    let start = 0;
+    let end = searchList.length -1;
+    let i = 0;
+    while (end - start > 3) {
+      i = Math.round((start + end) / 2);
       if (searchList[i].name === name) {
         return searchList[i].signature_count;
       } else if (searchList[i].name < name) {
-        searchList = searchList.slice(0, i);
+        end = i;
       } else {
-        searchList = searchList.slice(i);
+        start = i;
       }
     }
 
@@ -170,7 +169,7 @@ export default class ChartLegend extends Vue {
       }
     }
 
-    return -1;
+    return 0;
   }
   toggle(id: string) {
     this.constituencies[id].show = !this.constituencies[id].show;
@@ -198,6 +197,14 @@ export default class ChartLegend extends Vue {
   width: 15%;
   float:left;
   overflow-y: scroll;
+  height: 100%;
 }
 
+.everything {
+  height: 804px;
+  border-color: black;
+  border-style: solid;
+  border-width: 3px;
+  border-radius: 25px;
+}
 </style>
