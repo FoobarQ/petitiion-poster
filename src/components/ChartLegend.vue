@@ -211,7 +211,7 @@ export default class ChartLegend extends Vue {
 }
 
 .legend {
-  width: 280px;
+  width: 300px;
   float: left;
   overflow-y: auto;
   top: 150px;

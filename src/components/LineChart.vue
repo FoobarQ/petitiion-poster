@@ -43,7 +43,7 @@ export default class LineChart extends Vue {
     },
     chart: {
       height: 800,
-      width: 1600,
+      width: 1400,
     },
     plotOptions: {
       line: {
@@ -121,9 +121,9 @@ export default class LineChart extends Vue {
 }
 </script>
 
-<style >
+<style>
 .linechart > .contents {
-  background:none;
+  background: none;
 }
 
 .linechart {
@@ -132,7 +132,7 @@ export default class LineChart extends Vue {
   border-radius: 25px;
   border-width: 1px;
   background: none;
-  height: 1000px;
+  height: 900px;
 }
 
 button {
@@ -140,7 +140,7 @@ button {
 }
 
 .options {
-  height:100%;
+  height: 100%;
 }
 
 svg {

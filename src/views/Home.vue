@@ -14,7 +14,7 @@ import LineChart from "@/components/LineChart.vue";
 import PieChart from "@/components/PieChart.vue";
 import ChartLegend from "@/components/ChartLegend.vue";
 import Header from "@/components/Header.vue";
-import Dashboard from '@/components/Dashboard.vue';
+import Dashboard from "@/components/Dashboard.vue";
 import { State, Getter } from "vuex-class";
 import { AppState } from "@/store";
 
@@ -111,7 +111,7 @@ const seconds = 1000;
     PieChart,
     ChartLegend,
     Header,
-    Dashboard
+    Dashboard,
   },
 })
 export default class Home extends Vue {
@@ -134,10 +134,4 @@ export default class Home extends Vue {
 }
 </script>
 
-<style lang="scss">
-.components {
-  display: flex;
-  flex-basis: 1500px;
-  background: #f9f9f9;
-}
-</style>
+<style lang="scss"></style>

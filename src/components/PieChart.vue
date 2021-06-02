@@ -56,9 +56,9 @@ export default class PieChart extends Vue {
     ],
 
     plotOptions: {
-    pie: {
-      size: 300
-    },
+      pie: {
+        size: 300,
+      },
     },
     title: {
       text: "",
@@ -129,20 +129,14 @@ export default class PieChart extends Vue {
 }
 </script>
 
-<style >
+<style>
 .piechart > .contents {
-  background:none;
+  background: none;
 }
 
 .piechart {
-  height: 500px;
-  width: 500px;
-  border-style: solid;
-  border-color: lightgrey;
-  border-radius: 25px;
-  border-width: 1px;
-  margin: auto;
-  background: none;
+  height: 450px;
+  width: 550px;
 }
 
 button {
@@ -150,7 +144,7 @@ button {
 }
 
 .options {
-  height:100%;
+  height: 100%;
 }
 
 svg {

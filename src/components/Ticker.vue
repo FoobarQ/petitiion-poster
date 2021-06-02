@@ -17,7 +17,7 @@ export default class Ticker extends Vue {}
 
 <style lang="scss" scoped>
 .ticker {
-  height:80px;
+  height: 80px;
   width: 100%;
   color: #080;
   cursor: default;

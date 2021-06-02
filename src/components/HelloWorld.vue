@@ -11,8 +11,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class HelloWorld extends Vue {
-}
+export default class HelloWorld extends Vue {}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -23,7 +22,6 @@ a {
 .hello {
   border-style: solid;
   border-width: 1px;
-  border-color: grey;
   border-radius: 25px;
   height: 100px;
   max-height: 200px;
@@ -31,7 +29,7 @@ a {
 }
 p {
   color: #080;
-  padding: 5%;
+  padding: 1%;
   padding-top: 0%;
 }
 </style>
