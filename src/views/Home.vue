@@ -11,6 +11,8 @@
     <div class="components">
       <chart-legend />
     </div>
+    <pie-chart />
+    <hello-world :text="$store.state.petition.description" :continued="$store.state.petition.additional_details"/>
   </div>
 </template>
 
@@ -122,7 +124,7 @@ export default class Home extends Vue {
   @Getter("link")
   link!: string;
 
-  async mounted() {
+  async mounted(): Promise<void> {
     await this.$store.dispatch("setPetitionId", this.$route.params.id);
     //console.log("yahteet");
   }
@@ -158,8 +160,7 @@ h1 + div {
 
 .components {
   display: flex;
-  height: 1500px;
+  flex-basis: 1500px;
+  background: #F9F9F9;
 }
-
-
 </style>

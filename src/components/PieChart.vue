@@ -53,10 +53,7 @@ export default class PieChart extends Vue {
         data: [{}], // sample data.
       },
     ],
-    chart: {
-      height: 800,
-      width: 200,
-    },
+
     plotOptions: {
       line: {
         marker: {
@@ -71,27 +68,31 @@ export default class PieChart extends Vue {
   pieChart = "region";
 
   signatures_by_regionToPieData() {
-    const x = this.signatures_by_region.map((region: Region) => {
-      return {
-        name: region.name,
-        y: region.signature_count,
-      };
-    });
+    const x = this.$store.state.petition.signatures_by_region.map(
+      (region: Region) => {
+        return {
+          name: region.name,
+          y: region.signature_count,
+        };
+      }
+    );
     this.chartOptions.series[0].data = x;
   }
 
   signatures_by_countryToPieData() {
-    const x = this.signatures_by_country.map((country: Country) => {
-      return {
-        name: country.name,
-        y: country.signature_count,
-      };
-    });
+    const x = this.$store.state.petition.signatures_by_country.map(
+      (country: Country) => {
+        return {
+          name: country.name,
+          y: country.signature_count,
+        };
+      }
+    );
     this.chartOptions.series[0].data = x;
   }
 
   signatures_by_constituencyToPieData() {
-    const x = this.signatures_by_constituency.map(
+    const x = this.$store.state.petition.signatures_by_constituency.map(
       (constituency: Constituency) => {
         return {
           name: constituency.name,
@@ -102,24 +103,8 @@ export default class PieChart extends Vue {
     this.chartOptions.series[0].data = x;
   }
 
-  async mounted() {
-    setInterval(this.handlePetitionResponse, 3 * seconds);
-  }
-
-  async handlePetitionResponse() {
-    const options = {
-      method: "GET",
-      url: `https://petition.parliament.uk/petitions/${this.petitionId}.json`,
-    };
-    const whatever = await request(options);
-    const petition = JSON.parse(whatever).data.attributes;
-    this.signatures_by_region = petition.signatures_by_region;
-    this.signatures_by_country = petition.signatures_by_country;
-    this.signatures_by_constituency = petition.signatures_by_constituency;
-    this.updatePieChart();
-
-    console.log("tick");
-    return petition;
+  mounted() {
+    setInterval(this.updatePieChart, 60 * seconds);
   }
 
   setPieChart(i: string) {
@@ -142,34 +127,21 @@ export default class PieChart extends Vue {
         console.error("fuck, no piechart source");
     }
   }
-  /*async mounted() {
-    const petition = await this.handlePetitionResponse();
-    this.chartOptions.series[0].data = [petition.signature_count];
-    this.chartOptions.yAxis.softMin = petition.signature_count - 10;
-    this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
-
-    setInterval(this.update_function, 5 * seconds);
-  }
-
-
-
-  async update_function() {
-    const { signature_count } = await this.handlePetitionResponse();
-    this.chartOptions.series[0].data.push(signature_count);
-    //this.chartOptions.series[0].pointStart = this.chartOptions.series[0].pointStart - 2 * seconds;
-  }
-
-  titleify(input: string) {
-    let x = input.split(" ");
-    x = x.map((value) => value.slice(0, 1).toUpperCase() + value.slice(1));
-    return `${x.join(" ")}`;
-  }*/
 }
 </script>
 
 <style scoped>
 .piechart > div {
   background: white;
+}
+
+.piechart {
+  height: 350px;
+  width: 350px;
+  border-style: solid;
+  border-color: lightgrey;
+  border-radius: 25px;
+  border-width: 1px;
 }
 
 button {

@@ -12,8 +12,17 @@
               v-bind:key="constituency.ons_code"
               class="constituency"
             >
-              <input type="checkbox" :id="constituency.ons_code" :name="constituency.ons_code" @click="addLine(constituency.name, 'signatures_by_constituency')">
-              <label :for="constituency.ons_code">{{ constituency.name }}</label>
+              <input
+                type="checkbox"
+                :id="constituency.ons_code"
+                :name="constituency.ons_code"
+                @click="
+                  addLine(constituency.name, 'signatures_by_constituency')
+                "
+              />
+              <label :for="constituency.ons_code">{{
+                constituency.name
+              }}</label>
             </div>
           </template>
         </div>
@@ -25,8 +34,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Chart} from "highcharts-vue";
-import {Constituency,
+import { Chart } from "highcharts-vue";
+import {
+  Constituency,
   London,
   NW,
   E,
@@ -94,7 +104,7 @@ export default class ChartLegend extends Vue {
     },
     chart: {
       height: 800,
-      width: 1600
+      width: 1600,
     },
     plotOptions: {
       line: {
@@ -150,7 +160,7 @@ export default class ChartLegend extends Vue {
     const [type, name] = id.split(":");
     let searchList = this.$store.state.petition[type];
     let start = 0;
-    let end = searchList.length -1;
+    let end = searchList.length - 1;
     let i = 0;
     while (end - start > 3) {
       i = Math.round((start + end) / 2);
@@ -177,13 +187,23 @@ export default class ChartLegend extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .region {
-  border-bottom-style: dashed;
-  border-color: red;
+  border-bottom-style: solid;
+  border-color: black;
   cursor: pointer;
   text-align: left;
-  border-bottom-width: 2px;
+  border-bottom-width: 1px;
+
+  
+  h1 {
+    padding: 0px;
+    margin: 0px;
+  }
+}
+
+.region:hover {
+  background: lightgrey;
 }
 
 .constituency {
@@ -195,16 +215,20 @@ export default class ChartLegend extends Vue {
 
 .legend {
   width: 15%;
-  float:left;
-  overflow-y: scroll;
+  float: left;
+  overflow-y: auto;
   height: 100%;
+  border-right-color: black;
+  border-right-style: solid;
+  border-right-width: 1px;
 }
 
 .everything {
   height: 804px;
   border-color: black;
   border-style: solid;
-  border-width: 3px;
-  border-radius: 25px;
+  border-width: 1px;
+  background: white;
+  border-radius: 15px;
 }
 </style>

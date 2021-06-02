@@ -1,6 +1,5 @@
 <template>
   <div class="hello">
-    <h2>{{ title }}</h2>
     <p>
       {{ text }}
     </p>
@@ -15,7 +14,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class HelloWorld extends Vue {
-  @Prop() private title!: string;
   @Prop() private text!: string;
   @Prop() private continued!: string;
 }
@@ -41,7 +39,11 @@ h2 {
   height: 300px;
   float: left;
   padding: 0px;
-  background: #f0eddd;
+  background: white;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  border-radius: 25px;
 }
 p {
   color: #080;
