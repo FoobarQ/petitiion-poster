@@ -1,10 +1,12 @@
 <template>
   <div class="piechart">
-    <chart :options="chartOptions"></chart>
-    <div>
-      <button v-on:click="setPieChart('constituency')">constituency</button>
-      <button v-on:click="setPieChart('country')">country</button>
-      <button v-on:click="setPieChart('region')">region</button>
+    <div class="contents">
+      <chart :options="chartOptions"></chart>
+      <div class="options">
+        <button v-on:click="setPieChart('constituency')">constituency</button>
+        <button v-on:click="setPieChart('country')">country</button>
+        <button v-on:click="setPieChart('region')">region</button>
+      </div>
     </div>
   </div>
 </template>
@@ -12,7 +14,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
-import request from "request-promise";
 
 const seconds = 1000;
 
@@ -55,11 +56,9 @@ export default class PieChart extends Vue {
     ],
 
     plotOptions: {
-      line: {
-        marker: {
-          enabled: false,
-        },
-      },
+    pie: {
+      size: 300
+    },
     },
     title: {
       text: "",
@@ -130,21 +129,32 @@ export default class PieChart extends Vue {
 }
 </script>
 
-<style scoped>
-.piechart > div {
-  background: white;
+<style >
+.piechart > .contents {
+  background:none;
 }
 
 .piechart {
-  height: 350px;
-  width: 350px;
+  height: 500px;
+  width: 500px;
   border-style: solid;
   border-color: lightgrey;
   border-radius: 25px;
   border-width: 1px;
+  margin: auto;
+  background: none;
 }
 
 button {
   margin: 0 10px;
+}
+
+.options {
+  height:100%;
+}
+
+svg {
+  border-radius: 25px;
+  border-width: 1px;
 }
 </style>

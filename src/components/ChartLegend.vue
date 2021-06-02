@@ -1,6 +1,7 @@
 <template>
   <div class="everything" v-if="chartOptions">
     <div class="legend">
+      <ticker />
       <template v-for="region of Object.keys(constituencies)">
         <div v-bind:key="region">
           <div class="region" @click="toggle(region)">
@@ -28,7 +29,6 @@
         </div>
       </template>
     </div>
-    <chart :options="chartOptions"></chart>
   </div>
 </template>
 
@@ -50,6 +50,7 @@ import {
   NI,
   NE,
 } from "@/assets/constituencies";
+import Ticker from "@/components/Ticker.vue";
 
 const seconds = 1000;
 interface Constituencies {
@@ -60,7 +61,7 @@ interface Constituencies {
 }
 @Component({
   components: {
-    Chart,
+    Ticker,
   },
 })
 export default class ChartLegend extends Vue {
@@ -129,7 +130,7 @@ export default class ChartLegend extends Vue {
     this.chartOptions.yAxis.softMin =
       this.$store.state.petition.signature_count - 10;
     this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
-    //setInterval(this.update_function, 10 * seconds);
+    setInterval(this.update_function, 10 * seconds);
   }
 
   async update_function() {
@@ -189,13 +190,9 @@ export default class ChartLegend extends Vue {
 
 <style lang="scss" scoped>
 .region {
-  border-bottom-style: solid;
-  border-color: black;
   cursor: pointer;
   text-align: left;
-  border-bottom-width: 1px;
 
-  
   h1 {
     padding: 0px;
     margin: 0px;
@@ -203,7 +200,7 @@ export default class ChartLegend extends Vue {
 }
 
 .region:hover {
-  background: lightgrey;
+  background: rgb(240, 240, 240);
 }
 
 .constituency {
@@ -214,21 +211,15 @@ export default class ChartLegend extends Vue {
 }
 
 .legend {
-  width: 15%;
+  width: 280px;
   float: left;
   overflow-y: auto;
+  top: 150px;
   height: 100%;
-  border-right-color: black;
+  border-right-color: lightgrey;
   border-right-style: solid;
   border-right-width: 1px;
-}
-
-.everything {
-  height: 804px;
-  border-color: black;
-  border-style: solid;
-  border-width: 1px;
-  background: white;
-  border-radius: 15px;
+  position: fixed;
+  z-index: 1;
 }
 </style>

@@ -1,8 +1,13 @@
 <template>
-  <div class="home" v-if="true">
-    <Header />
-    <chart-legend />
-    <dashboard />
+  <div class="header">
+    <div class="data">
+      <h1>
+        <a :href="link">{{ $store.state.petition.action }}</a>
+      </h1>
+      <div>
+        <h2>by {{ $store.state.petition.creator_name }}</h2>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -13,8 +18,6 @@ import request from "request-promise";
 import LineChart from "@/components/LineChart.vue";
 import PieChart from "@/components/PieChart.vue";
 import ChartLegend from "@/components/ChartLegend.vue";
-import Header from "@/components/Header.vue";
-import Dashboard from '@/components/Dashboard.vue';
 import { State, Getter } from "vuex-class";
 import { AppState } from "@/store";
 
@@ -103,41 +106,51 @@ interface Data {
 interface Links {
   self: string;
 }
-const seconds = 1000;
+
 @Component({
   components: {
     LineChart,
     HelloWorld,
     PieChart,
     ChartLegend,
-    Header,
-    Dashboard
   },
 })
-export default class Home extends Vue {
+export default class Header extends Vue {
   @Getter("link")
   link!: string;
-
-  async mounted(): Promise<void> {
-    await this.$store.dispatch("setPetitionId", this.$route.params.id);
-    setInterval(this.handlePetitionResponse, 5 * seconds);
-  }
-
-  async handlePetitionResponse(): Promise<void> {
-    const options = {
-      method: "GET",
-      url: `${this.link}.json`,
-    };
-    const whatever = await request(options);
-    this.$store.commit("setPetition", JSON.parse(whatever).data.attributes);
-  }
 }
 </script>
 
 <style lang="scss">
-.components {
-  display: flex;
-  flex-basis: 1500px;
-  background: #f9f9f9;
+.header {
+  box-shadow: 0px 5px 3px 0px #ccc;
+  position: fixed;
+  height: 150px;
+  width: 100%;
+  top: 0px;
+  z-index: 2;
+}
+
+a {
+  text-decoration: none;
+  color: #080;
+}
+
+h1 + div {
+  position: relative;
+  background: #080;
+  color: white;
+  bottom: 0px;
+  margin: 0;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.data {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
 }
 </style>

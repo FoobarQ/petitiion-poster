@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="linechart">
     <chart :options="chartOptions"></chart>
     <button @click="addLine('North West', 'signatures_by_region')">
       North West
@@ -116,7 +116,35 @@ export default class LineChart extends Vue {
       }
     }
 
-    return -1;
+    return 0;
   }
 }
 </script>
+
+<style >
+.linechart > .contents {
+  background:none;
+}
+
+.linechart {
+  border-style: solid;
+  border-color: lightgrey;
+  border-radius: 25px;
+  border-width: 1px;
+  background: none;
+  height: 1000px;
+}
+
+button {
+  margin: 0 10px;
+}
+
+.options {
+  height:100%;
+}
+
+svg {
+  border-radius: 25px;
+  border-width: 1px;
+}
+</style>
