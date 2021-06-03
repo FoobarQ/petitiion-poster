@@ -1,15 +1,13 @@
 <template>
-  <div class="linechart">
-    <chart :options="chartOptions"></chart>
-    <button @click="addLine('North West', 'signatures_by_region')">
-      North West
-    </button>
+  <div class="linechart" v-if="chartOptions.series">
+    <chart v-bind:options="chartOptions" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
+import { Getter } from "vuex-class";
 
 const seconds = 1000;
 @Component({
@@ -18,78 +16,28 @@ const seconds = 1000;
   },
 })
 export default class LineChart extends Vue {
-  chartOptions: any = {
-    series: [
-      {
-        name: "No. Signatures",
-        color: "#080",
-        data: [], // sample data.
-        pointStart: Date.now(),
-        pointInterval: 5 * seconds,
-      },
-    ],
-    xAxis: {
-      type: "datetime",
-      gridLineDashStyle: "dashed",
-      lineColor: "black",
-      lineWidth: "2",
-    },
-    yAxis: {
-      allowDecimals: false,
-      softMax: 10000,
-      softMin: 9000,
-      gridLineColor: "white",
-      visible: false,
-    },
-    chart: {
-      height: 800,
-      width: 1400,
-    },
-    plotOptions: {
-      line: {
-        marker: {
-          enabled: false,
-        },
-      },
-    },
-    title: {
-      text: "",
-    },
-  };
+  @Getter("chartOptions")
+  chartOptions!: any;
 
   keyPairs: { [key: string]: number } = {
     signature_count: 0,
   };
   async mounted() {
-    this.chartOptions.series[0].data = [
-      this.$store.state.petition.signature_count,
-    ];
-    this.chartOptions.yAxis.softMin =
+    this.$store.state.chartOptions.series[0].data.push(this.$store.state.petition.signature_count);
+    this.$store.state.chartOptions.yAxis.softMin =
       this.$store.state.petition.signature_count - 10;
-    this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
+    this.$store.state.chartOptions.yAxis.softMax = this.$store.state.chartOptions.yAxis.softMin + 40;
+    console.log(this.chartOptions);
     setInterval(this.update_function, 5 * seconds);
   }
 
   async update_function() {
-    for (const key in this.keyPairs) {
+    for (const key in this.$store.state.keyPairs) {
       console.log(key + " " + this.getSignatureCount(key));
-      this.chartOptions.series[this.keyPairs[key]].data.push(
+      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].data.push(
         this.getSignatureCount(key)
       );
     }
-  }
-
-  addLine(name: string, type: string) {
-    if (this.keyPairs[type + ":" + name] !== undefined) {
-      return;
-    }
-    this.keyPairs[type + ":" + name] = this.chartOptions.series.length;
-    this.chartOptions.series.push({
-      data: [],
-      pointStart: Date.now(),
-      pointInterval: 5 * seconds,
-      name,
-    });
   }
 
   getSignatureCount(id: string): number {
@@ -97,16 +45,18 @@ export default class LineChart extends Vue {
       return this.$store.state.petition.signature_count;
     }
     const [type, name] = id.split(":");
-    let searchList = [...this.$store.state.petition[type]];
-
-    while (searchList.length > 3) {
-      const i = Math.round(searchList.length / 2);
+    let searchList = this.$store.state.petition[type];
+    let start = 0;
+    let end = searchList.length - 1;
+    let i = 0;
+    while (end - start > 3) {
+      i = Math.round((start + end) / 2);
       if (searchList[i].name === name) {
         return searchList[i].signature_count;
       } else if (searchList[i].name < name) {
-        searchList = searchList.slice(0, i);
+        end = i;
       } else {
-        searchList = searchList.slice(i);
+        start = i;
       }
     }
 
@@ -132,7 +82,7 @@ export default class LineChart extends Vue {
   border-radius: 25px;
   border-width: 1px;
   background: none;
-  height: 900px;
+  height: fit-content;
 }
 
 button {

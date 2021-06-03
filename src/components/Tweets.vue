@@ -28,7 +28,7 @@ div.twitter-tweet.twitter-tweet-rendered {
   border: none;
   padding: none;
   width: 550px;
-  height: 100px;
+  height: fit-content;
   margin-top: 10px;
   margin-bottom: 10px;
   background: none;

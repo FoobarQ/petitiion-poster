@@ -1,5 +1,5 @@
 <template>
-  <div class="everything" v-if="chartOptions">
+  <div class="everything">
     <div class="legend">
       <ticker />
       <template v-for="region of Object.keys(constituencies)">
@@ -34,7 +34,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Chart } from "highcharts-vue";
 import {
   Constituency,
   London,
@@ -80,110 +79,37 @@ export default class ChartLegend extends Vue {
     "Yorkshire & the Humber": { data: Yorkshire, show: false },
   };
 
-  chartOptions: any = {
-    series: [
-      {
-        name: "No. Signatures",
-        color: "#080",
-        data: [0], // sample data.
-        pointStart: Date.now(),
-        pointInterval: 5 * seconds,
-      },
-    ],
-    xAxis: {
-      type: "datetime",
-      gridLineDashStyle: "dashed",
-      lineColor: "black",
-      lineWidth: "2",
-    },
-    yAxis: {
-      allowDecimals: false,
-      softMax: 10000,
-      softMin: 9000,
-      gridLineColor: "white",
-      visible: false,
-    },
-    chart: {
-      height: 800,
-      width: 1600,
-    },
-    plotOptions: {
-      line: {
-        marker: {
-          enabled: false,
-        },
-      },
-    },
-    title: {
-      text: "",
-    },
-  };
-
-  keyPairs: { [key: string]: number } = {
-    signature_count: 0,
-  };
-  async mounted() {
-    this.chartOptions.series[0].data = [
-      this.$store.state.petition.signature_count,
-    ];
-    console.log(this.$store.state.petition.signature_count);
-    this.chartOptions.yAxis.softMin =
-      this.$store.state.petition.signature_count - 10;
-    this.chartOptions.yAxis.softMax = this.chartOptions.yAxis.softMin + 40;
-    setInterval(this.update_function, 10 * seconds);
-  }
-
-  async update_function() {
-    for (const key in this.keyPairs) {
-      this.chartOptions.series[this.keyPairs[key]].data.push(
-        this.getSignatureCount(key)
-      );
-    }
-  }
-
-  addLine(name: string, type: string) {
-    if (this.keyPairs[type + ":" + name] !== undefined) {
+  addLine(name: string, type?: string) {
+    if (this.$store.state.keyPairs[type + ":" + name] !== undefined) {
       return;
     }
-    this.keyPairs[type + ":" + name] = this.chartOptions.series.length;
-    this.chartOptions.series.push({
+    if (type) {
+      this.$store.state.keyPairs[type + ":" + name] = this.$store.state.chartOptions.series.length;
+      this.$store.state.chartOptions.series.push({
       data: [],
       pointStart: Date.now(),
       pointInterval: 10 * seconds,
       name,
     });
+    } else {
+      this.$store.state.keyPairs[name] = this.$store.state.chartOptions.series.length;
+      this.$store.state.chartOptions.series.push({
+          color: "#080",
+          data: [], // sample data.
+          pointStart: Date.now(),
+          pointInterval: 5 * 1000,
+          name
+        });
+    }
+
   }
 
-  getSignatureCount(id: string): number {
-    if (!id.includes(":")) {
-      return this.$store.state.petition.signature_count;
-    }
-    const [type, name] = id.split(":");
-    let searchList = this.$store.state.petition[type];
-    let start = 0;
-    let end = searchList.length - 1;
-    let i = 0;
-    while (end - start > 3) {
-      i = Math.round((start + end) / 2);
-      if (searchList[i].name === name) {
-        return searchList[i].signature_count;
-      } else if (searchList[i].name < name) {
-        end = i;
-      } else {
-        start = i;
-      }
-    }
-
-    for (const item of searchList) {
-      if (item.name === name) {
-        return item.signature_count;
-      }
-    }
-
-    return 0;
-  }
   toggle(id: string) {
     this.constituencies[id].show = !this.constituencies[id].show;
+  }
+
+  mounted() {
+    this.addLine("Total Signatures");
   }
 }
 </script>

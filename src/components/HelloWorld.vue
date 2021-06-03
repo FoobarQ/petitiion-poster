@@ -20,12 +20,8 @@ a {
   color: #42b983;
 }
 .hello {
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 25px;
-  height: 100px;
   max-height: 200px;
-  width: 2200px;
+  width: 1992px;
 }
 p {
   color: #080;

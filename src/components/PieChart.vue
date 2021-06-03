@@ -57,7 +57,7 @@ export default class PieChart extends Vue {
 
     plotOptions: {
       pie: {
-        size: 300,
+        height: 2000
       },
     },
     title: {
@@ -132,11 +132,12 @@ export default class PieChart extends Vue {
 <style>
 .piechart > .contents {
   background: none;
+  height: fit-content;
 }
 
 .piechart {
-  height: 450px;
-  width: 550px;
+  height: 500px;
+  width: 650px;
 }
 
 button {

@@ -2,10 +2,9 @@
   <div class="dash flex-container">
     <hello-world />
     <line-chart />
-    <div>
     <pie-chart />
     <twitter :tweetId="'692527862369357824'"/>
-    </div>
+    <happiness-chart v-if="$store.state.petition.closed_at"/>
   </div>
 </template>
 
@@ -16,6 +15,7 @@ import LineChart from "@/components/LineChart.vue";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Twitter from "@/components/Tweets.vue";
 import { Tweet, Moment, Timeline } from 'vue-tweet-embed';
+import HappinessChart from '@/components/HappinessChart.vue';
 
 
 @Component({
@@ -23,7 +23,8 @@ import { Tweet, Moment, Timeline } from 'vue-tweet-embed';
     PieChart,
     LineChart,
     Twitter,
-    HelloWorld
+    HelloWorld,
+    HappinessChart
   },
 })
 export default class Dashboard extends Vue {}
@@ -35,6 +36,8 @@ export default class Dashboard extends Vue {}
   width: 100%;
   top: 150px;
   left: 310px;
+  overflow-y: auto;
+  bottom: 0px;
 }
 
 .flex-container {

@@ -15,17 +15,15 @@ export default new Vuex.Store({
     petitionId: 0,
     petition: {},
     status: false,
-    keyPairs: {
-      signature_count: 0,
-    },
+    keyPairs: {},
     chartOptions: {
       series: [
         {
-          name: "No. Signatures",
-          color: "#080",
+          name: "Needs to be here for some reason.",
+          color: "#000",
           data: [], // sample data.
           pointStart: Date.now(),
-          pointInterval: 5 * 1000,
+          showInLegend: false,
         },
       ],
       xAxis: {
@@ -36,10 +34,14 @@ export default new Vuex.Store({
       },
       yAxis: {
         allowDecimals: false,
-        softMax: 10000,
-        softMin: 9000,
+        softMax: 30,
+        softMin: 0,
         gridLineColor: "white",
         visible: false,
+      },
+      chart: {
+        height: 500,
+        width: 1300,
       },
       plotOptions: {
         line: {
@@ -72,13 +74,14 @@ export default new Vuex.Store({
     additional_details: (state) =>
       state.petition ? state.petition.additional_details : "",
     signatures_by_region: (state) =>
-      state.petition ? state.petition.signatures_by_region : "",
+      state.petition ? state.petition.signatures_by_region : 0,
     signatures_by_country: (state) =>
-      state.petition ? state.petition.signatures_by_country : "",
+      state.petition ? state.petition.signatures_by_country : 0,
     signatures_by_constituency: (state) =>
-      state.petition ? state.petition.signatures_by_constituency : "",
+      state.petition ? state.petition.signatures_by_constituency : 0,
     signature_count: (state) =>
       state.petition ? state.petition.signature_count : 0,
+    chartOptions: (state) => state.chartOptions,
   },
   actions: {
     setPetitionId: (context, petitionId) => {
