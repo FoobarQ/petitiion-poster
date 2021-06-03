@@ -1,6 +1,6 @@
 <template>
-  <div class="everything">
-    <div class="legend">
+  <div class="sidebar">
+    <div>
       <ticker />
       <template v-for="region of Object.keys(constituencies)">
         <div v-bind:key="region">
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import {
   Constituency,
   London,
@@ -63,7 +63,7 @@ interface Constituencies {
     Ticker,
   },
 })
-export default class ChartLegend extends Vue {
+export default class Sidebar extends Vue {
   constituencies: Constituencies = {
     "East of England": { data: E, show: false },
     "East Midlands": { data: EastMidlands, show: false },
@@ -136,7 +136,7 @@ export default class ChartLegend extends Vue {
   text-align: left;
 }
 
-.legend {
+.sidebar > div {
   width: 300px;
   float: left;
   overflow-y: auto;

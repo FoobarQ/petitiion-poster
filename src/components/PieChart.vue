@@ -103,7 +103,7 @@ export default class PieChart extends Vue {
   }
 
   mounted() {
-    setInterval(this.updatePieChart, 60 * seconds);
+    setInterval(this.updatePieChart, 5 * seconds);
   }
 
   setPieChart(i: string) {

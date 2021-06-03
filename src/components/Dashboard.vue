@@ -14,8 +14,7 @@ import PieChart from "@/components/PieChart.vue";
 import LineChart from "@/components/LineChart.vue";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Twitter from "@/components/Tweets.vue";
-import { Tweet, Moment, Timeline } from 'vue-tweet-embed';
-import HappinessChart from '@/components/HappinessChart.vue';
+import HappinessForm from '@/components/HappinessForm.vue';
 
 
 @Component({
@@ -24,7 +23,7 @@ import HappinessChart from '@/components/HappinessChart.vue';
     LineChart,
     Twitter,
     HelloWorld,
-    HappinessChart
+    HappinessForm
   },
 })
 export default class Dashboard extends Vue {}
@@ -38,15 +37,13 @@ export default class Dashboard extends Vue {}
   left: 310px;
   overflow-y: auto;
   bottom: 0px;
-}
-
-.flex-container {
+  right: 0px;
   display: flex;
   flex-wrap: wrap;
   background-color: rgb(247, 247, 247);
 }
 
-.flex-container > div {
+.dash > div {
   background-color: white;
   margin: 20px;
   border-style: solid;
