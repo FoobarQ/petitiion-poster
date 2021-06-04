@@ -3,7 +3,7 @@
     <hello-world />
     <line-chart />
     <pie-chart />
-    <twitter :tweetId="'692527862369357824'"/>
+    <twitter v-if="tweetId" :tweetId="tweetId"/>
     <happiness-chart v-if="$store.state.petition.closed_at"/>
   </div>
 </template>
@@ -26,7 +26,18 @@ import HappinessForm from '@/components/HappinessForm.vue';
     HappinessForm
   },
 })
-export default class Dashboard extends Vue {}
+export default class Dashboard extends Vue {
+  tweetId = "";
+  mounted() {
+    console.log(this.$route.params.id);
+    fetch(`/api/tweet/${this.$route.params.id}`).then(response => response.json()).then(
+      tId => {
+        console.log(tId);
+        this.tweetId = tId;
+      }
+    );
+  }
+}
 </script>
 
 <style>

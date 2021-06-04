@@ -26,7 +26,7 @@ export default class Petition extends Vue {
   @Getter("link")
   link!: string;
 
-  async mounted(): Promise<void> {
+  async beforeMount(): Promise<void> {
     await this.$store.dispatch("setPetitionId", this.$route.params.id);
     setInterval(this.handlePetitionResponse, 5 * seconds);
   }

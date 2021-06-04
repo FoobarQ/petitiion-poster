@@ -1,9 +1,9 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
-import { Petition } from "./entity/Petition";
+import typeorm from "typeorm";
+import Petition from "./entity/Petition";
 import fetch from "node-fetch";
-
-const request = require("request-promise");
+import request from "request-promise";
+import requestPromise from "request-promise";
 const petitionUrl = process.env.PETITION_URL;
 
 const options = {
@@ -23,7 +23,7 @@ const options = {
 const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
   : 2;
-createConnection({
+typeorm.createConnection({
   type: "postgres",
   url: process.env.DATABASE_URL,
   ssl: true,
@@ -32,7 +32,7 @@ createConnection({
       rejectUnauthorized: false,
     },
   },
-  entities: [__dirname + "/entity/*"],
+  entities: [Petition],
   synchronize: true, // I don't like it, but it's needed to keep secrets secret
 })
   .then(async (connection) => {
@@ -42,8 +42,7 @@ createConnection({
     while (tweetsMade < TWEET_LIMIT) {
       console.log("Retrieving petitions...");
 
-      let petitions: PetitionInterface[];
-      petitions = await getPetitions(page);
+      let petitions: PetitionInterface[] = await getPetitions(page) || [];
       if (!petitions) {
         console.log("page limit reached.");
         return;
@@ -154,7 +153,7 @@ async function composeTweet(petition: PetitionInterface) {
 async function postTweet(tweet: string) {
   let tweetConfirmation;
   options.form.status = tweet;
-  await request(options, function (error, response) {
+  await request(options, (error:any, response) => {
     if (error) throw new Error(error);
     tweetConfirmation = JSON.parse(response.body).id_str;
   });
@@ -169,7 +168,7 @@ async function getPetitions(
     pageNumber = 1;
   }
 
-  const x = { petitions: [] };
+  const x: { petitions: PetitionInterface[] } = { petitions: [] };
   await fetch(`${petitionUrl}?page=${pageNumber}&state=open`)
     .then((response) => response.json())
     .then((data) => fixResponse(data))
@@ -191,7 +190,7 @@ function hashtagify(input: string) {
   return `#${x.join("")} `;
 }
 
-async function fixResponse(data): Promise<{
+async function fixResponse(data: any): Promise<{
   links: Links;
   petitions: PetitionInterface[];
 }> {
