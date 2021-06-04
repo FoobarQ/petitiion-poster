@@ -1,12 +1,12 @@
-import express from 'express';
+import express from "express";
 import "reflect-metadata";
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import typeorm from "typeorm";
-import Petition from './entity/Petition.js';
+import Petition from "./entity/Petition.js";
 
 let conn: typeorm.Connection;
 async function setupConnection(): Promise<void> {
@@ -20,18 +20,17 @@ async function setupConnection(): Promise<void> {
       },
     },
     entities: [Petition],
-  }); 
+  });
   console.log("Database online");
 }
 
-
 setupConnection();
 const app = express();
-const port = 3080;
+const port = process.env.PORT || 3080;
 
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, "/public")));
 
-app.get('/api/tweet/:id', async (req, res) => {
+app.get("/api/tweet/:id", async (req, res) => {
   const entity = await conn.manager.findOne(Petition, {
     where: {
       id: `${req.params.id}`,
@@ -40,11 +39,10 @@ app.get('/api/tweet/:id', async (req, res) => {
   if (entity) {
     res.json(entity.tweetId);
   }
-
 });
 
-app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
+app.get(/.*/, (req, res) => res.sendFile(__dirname + "/public/index.html"));
 
 app.listen(port, () => {
-    console.log(`Server listening on the port::${port}`);
+  console.log(`Server listening on the port::${port}`);
 });

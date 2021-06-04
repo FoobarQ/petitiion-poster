@@ -42,12 +42,11 @@
       "webpack-stream": "^5.2.1"
    },
    "scripts": {
-      "build": "tsc",
-      "post": "node build/create.js",
-      "delete": "node build/delete.js",
-      "update": "node build/update.js",
-      "start": "node ./build/server.js",
-      "dev": "tsc && nodemon ./build/server.js"
+      "postinstall": "tsc",
+      "post": "node --experimental-specifier-resolution=node ./build/create",
+      "delete": "node --experimental-specifier-resolution=node ./build/delete",
+      "update": "node --experimental-specifier-resolution=node ./build/update",
+      "start": "node --experimental-specifier-resolution=node ./build/server"
    },
    "type": "module"
 }
