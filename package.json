@@ -1,36 +1,13 @@
 {
-   "name": "tweeter",
-   "version": "1.0.0",
-   "description": "bot to post uk petitions",
-   "main": "index.js",
-   "author": "Joshua S. Hall",
-   "license": "MIT",
-   "dependencies": {
-      "node-fetch": "^2.6.1",
-      "pg": "^8.4.0",
-      "reflect-metadata": "^0.1.10",
-      "request": "^2.88.2",
-      "request-promise": "^4.2.6",
-      "twitter-api-client": "^1.3.7",
-      "twitter-v2": "^1.0.8",
-      "typeorm": "^0.2.32"
-   },
-   "devDependencies": {
-      "@types/node": "^8.0.29",
-      "@types/node-fetch": "^2.5.9",
-      "@types/request": "^2.48.5",
-      "@types/request-promise": "^4.1.47",
-      "@types/typescript": "^2.0.0",
-      "npx": "^10.2.2",
-      "ts-node": "3.3.0",
-      "typescript": "3.3.3333"
-   },
-   "scripts": {
-      "build": "tsc",
-      "dev": "ts-node src/create.ts",
-      "start": "echo Bot online.",
-      "post": "node build/create.js",
-      "delete": "node build/delete.js",
-      "update": "node build/update.js"
-   }
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "post": "cd server && yarn post",
+    "delete": "cd server && yarn delete",
+    "update": "cd server && yarn update",
+    "start": "cd server && yarn start"
+  }
 }

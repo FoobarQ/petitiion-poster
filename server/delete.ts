@@ -1,7 +1,7 @@
 import "reflect-metadata";
-import { createConnection, LessThan } from "typeorm";
-import { Petition } from "./entity/Petition";
-const request = require("request-promise");
+import typeorm  from "typeorm";
+import Petition from "./entity/Petition";
+import request from "request-promise";
 
 const options = {
   method: "POST",
@@ -14,7 +14,7 @@ const options = {
   },
 };
 
-createConnection({
+typeorm.createConnection({
   type: "postgres",
   url: process.env.DATABASE_URL,
   ssl: true,
@@ -23,7 +23,7 @@ createConnection({
       rejectUnauthorized: false,
     },
   },
-  entities: [__dirname + "/entity/*"],
+  entities: [Petition],
   synchronize: true, // I don't like it, but it's needed to keep secrets secret
 })
   .then(async (connection) => {
@@ -31,7 +31,7 @@ createConnection({
       console.log("Finding outdated petitions");
       const petitions = await connection.manager.find(Petition, {
         where: {
-          deadline: LessThan(
+          deadline: typeorm.LessThan(
             new Date().toISOString().replace("T", " ").replace("Z", "")
           ),
         },
@@ -55,7 +55,7 @@ async function deleteTweet(tweetId: string) {
   console.log(`Deleting tweet ${tweetId}...`);
   let previous;
   options.url = `https://api.twitter.com/1.1/statuses/destroy/${tweetId}.json`;
-  await request(options, function (error, response) {
+  await request(options, (error:any, response) => {
     if (error) throw new Error(error);
     previous = JSON.parse(response.body).in_reply_to_status_id_str;
   });

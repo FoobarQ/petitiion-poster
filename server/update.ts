@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
-import { Petition } from "./entity/Petition";
+import typeorm from "typeorm";
+import Petition from "./entity/Petition.js";
 import fetch from "node-fetch";
-const request = require("request-promise");
+import request from "request-promise";
 
 const petitionUrl = process.env.PETITION_URL;
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
@@ -23,7 +23,7 @@ const options = {
   },
 };
 
-createConnection({
+typeorm.createConnection({
   type: "postgres",
   url: process.env.DATABASE_URL,
   ssl: true,
@@ -32,7 +32,7 @@ createConnection({
       rejectUnauthorized: false,
     },
   },
-  entities: [__dirname + "/entity/*"],
+  entities: [Petition],
   synchronize: true, // I don't like it, but it's needed to keep secrets secret
 })
   .then(async (connection) => {
@@ -127,7 +127,7 @@ async function updateTweet(tweetId: string, tweetBodies: string[]) {
   for (const body of tweetBodies) {
     options.form.in_reply_to_status_id = tweetConfirmation;
     options.form.status = body;
-    await request(options, function (error, response) {
+    await request(options, (error:any, response) => {
       if (error) throw new Error(error);
       tweetConfirmation = JSON.parse(response.body).id_str;
     });
