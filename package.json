@@ -8,6 +8,7 @@
     "post": "cd server && yarn post",
     "delete": "cd server && yarn delete",
     "update": "cd server && yarn update",
-    "start": "cd server && yarn start"
+    "start": "cd server && yarn start",
+    "serve": "cd client && yarn serve"
   }
 }

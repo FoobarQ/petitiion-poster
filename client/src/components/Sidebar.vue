@@ -2,6 +2,7 @@
   <div class="sidebar">
     <div>
       <ticker />
+      <div class="key">
       <template v-for="region of Object.keys(constituencies)">
         <div v-bind:key="region">
           <div class="region" @click="toggle(region)">
@@ -28,6 +29,10 @@
           </template>
         </div>
       </template>
+      </div>
+      <div class="follow">
+        Follow <a href="https://twitter.com/intent/user?screen_name=UKPetitionPosts">@UKPetitionPosts on Twitter</a> to stay up to date with government petitions.
+      </div>
     </div>
   </div>
 </template>
@@ -139,7 +144,6 @@ export default class Sidebar extends Vue {
 .sidebar > div {
   width: 300px;
   float: left;
-  overflow-y: auto;
   top: 150px;
   height: 100%;
   border-right-color: lightgrey;
@@ -147,5 +151,21 @@ export default class Sidebar extends Vue {
   border-right-width: 1px;
   position: fixed;
   z-index: 1;
+  bottom: 50px;
+}
+
+.key {
+  height: 75%;
+  max-height: 75%;
+  overflow-y: auto;
+}
+
+.class {
+  position: absolute;
+  bottom: 0px;
+}
+
+.follow {
+  font-size: 1.2em;
 }
 </style>
