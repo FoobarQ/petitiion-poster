@@ -5,6 +5,7 @@
     "server"
   ],
   "scripts": {
+    "postinstall": "cd client && yarn build && cd ../server && tsc",
     "post": "cd server && yarn post",
     "delete": "cd server && yarn delete",
     "update": "cd server && yarn update",

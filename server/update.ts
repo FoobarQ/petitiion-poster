@@ -4,7 +4,6 @@ import Petition from "./entity/Petition.js";
 import fetch from "node-fetch";
 import request from "request-promise";
 
-const petitionUrl = process.env.PETITION_URL;
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
   ? parseInt(process.env.UPDATE_LIMIT)
   : 2;
@@ -23,18 +22,19 @@ const options = {
   },
 };
 
-typeorm.createConnection({
-  type: "postgres",
-  url: process.env.DATABASE_URL,
-  ssl: true,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
+typeorm
+  .createConnection({
+    type: "postgres",
+    url: process.env.DATABASE_URL,
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
-  },
-  entities: [Petition],
-  synchronize: true, // I don't like it, but it's needed to keep secrets secret
-})
+    entities: [Petition],
+    synchronize: true, // I don't like it, but it's needed to keep secrets secret
+  })
   .then(async (connection) => {
     let updatesMade = 0;
     try {
@@ -127,7 +127,7 @@ async function updateTweet(tweetId: string, tweetBodies: string[]) {
   for (const body of tweetBodies) {
     options.form.in_reply_to_status_id = tweetConfirmation;
     options.form.status = body;
-    await request(options, (error:any, response) => {
+    await request(options, (error: any, response) => {
       if (error) throw new Error(error);
       tweetConfirmation = JSON.parse(response.body).id_str;
     });
