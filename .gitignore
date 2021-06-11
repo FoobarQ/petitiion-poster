@@ -2,6 +2,7 @@
 *node_modules
 */dist
 server/public
+*/build
 
 # local env files
 .env.local

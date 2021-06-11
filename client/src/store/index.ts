@@ -40,7 +40,7 @@ export default new Vuex.Store({
         visible: false,
       },
       chart: {
-        height: 500,
+        height: 470,
         width: 1300,
       },
       plotOptions: {

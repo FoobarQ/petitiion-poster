@@ -29,10 +29,8 @@ import HappinessForm from '@/components/HappinessForm.vue';
 export default class Dashboard extends Vue {
   tweetId = "";
   mounted() {
-    console.log(this.$route.params.id);
     fetch(`/api/tweet/${this.$route.params.id}`).then(response => response.json()).then(
       tId => {
-        console.log(tId);
         this.tweetId = tId;
       }
     );

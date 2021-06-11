@@ -96,17 +96,7 @@ export default class Sidebar extends Vue {
       pointInterval: 10 * seconds,
       name,
     });
-    } else {
-      this.$store.state.keyPairs[name] = this.$store.state.chartOptions.series.length;
-      this.$store.state.chartOptions.series.push({
-          color: "#080",
-          data: [], // sample data.
-          pointStart: Date.now(),
-          pointInterval: 5 * 1000,
-          name
-        });
     }
-
   }
 
   toggle(id: string) {

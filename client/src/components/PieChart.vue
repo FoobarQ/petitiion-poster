@@ -129,7 +129,7 @@ export default class PieChart extends Vue {
 }
 </script>
 
-<style>
+<style lang="scss">
 .piechart > .contents {
   background: none;
   height: fit-content;
@@ -149,7 +149,7 @@ button {
 }
 
 svg {
-  border-radius: 25px;
-  border-width: 1px;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
 }
 </style>

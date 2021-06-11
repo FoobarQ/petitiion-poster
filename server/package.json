@@ -25,6 +25,7 @@
       "@types/jest": "^26.0.23",
       "@types/node": "^8.0.29",
       "@types/node-fetch": "^2.5.9",
+      "@types/pg": "^8.6.0",
       "@types/request": "^2.48.5",
       "@types/request-promise": "^4.1.47",
       "@types/sequelize": "^4.28.9",
