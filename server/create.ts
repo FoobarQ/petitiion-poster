@@ -1,10 +1,8 @@
 import "reflect-metadata";
 import typeorm from "typeorm";
 import Petition from "./entity/Petition";
-import fetch from "node-fetch";
 import request from "request-promise";
-import requestPromise from "request-promise";
-const petitionUrl = process.env.PETITION_URL;
+import { getPetitions } from "./utils";
 
 const options = {
   method: "POST",
@@ -23,18 +21,19 @@ const options = {
 const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
   : 2;
-typeorm.createConnection({
-  type: "postgres",
-  url: process.env.DATABASE_URL,
-  ssl: true,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
+typeorm
+  .createConnection({
+    type: "postgres",
+    url: process.env.DATABASE_URL,
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
-  },
-  entities: [Petition],
-  synchronize: true, // I don't like it, but it's needed to keep secrets secret
-})
+    entities: [Petition],
+    synchronize: true, // I don't like it, but it's needed to keep secrets secret
+  })
   .then(async (connection) => {
     let tweetsMade = 0;
     let page = 1;
@@ -42,7 +41,7 @@ typeorm.createConnection({
     while (tweetsMade < TWEET_LIMIT) {
       console.log("Retrieving petitions...");
 
-      let petitions: PetitionInterface[] = await getPetitions(page) || [];
+      let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
       if (!petitions) {
         console.log("page limit reached.");
         return;
@@ -153,7 +152,7 @@ async function composeTweet(petition: PetitionInterface) {
 async function postTweet(tweet: string) {
   let tweetConfirmation;
   options.form.status = tweet;
-  await request(options, (error:any, response) => {
+  await request(options, (error: any, response) => {
     if (error) throw new Error(error);
     tweetConfirmation = JSON.parse(response.body).id_str;
   });
@@ -161,61 +160,8 @@ async function postTweet(tweet: string) {
   return tweetConfirmation;
 }
 
-async function getPetitions(
-  pageNumber: number = 0
-): Promise<PetitionInterface[] | null> {
-  if (!pageNumber) {
-    pageNumber = 1;
-  }
-
-  const x: { petitions: PetitionInterface[] } = { petitions: [] };
-  await fetch(`${petitionUrl}?page=${pageNumber}&state=open`)
-    .then((response) => response.json())
-    .then((data) => fixResponse(data))
-    .then((stuff) => (x.petitions = stuff.petitions))
-    .catch((error) => {
-      console.error(error);
-    });
-
-  return x.petitions !== [] ? x.petitions : null;
-}
-
-function toDate(input: string | null) {
-  return input ? new Date(input) : null;
-}
-
 function hashtagify(input: string) {
   let x = input.split("-");
   x = x.map((value) => value.slice(0, 1).toUpperCase() + value.slice(1));
   return `#${x.join("")} `;
-}
-
-async function fixResponse(data: any): Promise<{
-  links: Links;
-  petitions: PetitionInterface[];
-}> {
-  const petitions = [];
-  let petition;
-  const dateVariables = [
-    "created_at",
-    "updated_at",
-    "rejected_at",
-    "opened_at",
-    "closed_at",
-    "moderation_threshold_reached_at",
-    "response_threshold_reached_at",
-    "government_response_at",
-    "debate_threshold_reached_at",
-    "scheduled_debate_date",
-    "debate_outcome_at",
-  ];
-  for (let i = 0; i < data.data.length; i++) {
-    petition = data.data[i].attributes;
-    for (const variable of dateVariables) {
-      petition[variable] = toDate(petition[variable]);
-    }
-    data.data[i].attributes = petition;
-    petitions.push(data.data[i]);
-  }
-  return { links: data.links, petitions };
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="linechart" v-if="chartOptions.series">
     <chart v-bind:options="chartOptions" />
+    <button class="left" @click="showHistory(false)" :disabled="showRealtime">Real-time Data</button><button class="right" @click="showHistory(true)"  :disabled="!showRealtime">Historical Data</button>
   </div>
 </template>
 
@@ -16,35 +17,58 @@ const seconds = 1000;
   },
 })
 export default class LineChart extends Vue {
+  historicalSignatureData: [number, number][] = [];
+  showRealtime = true;
+
   @Getter("chartOptions")
   chartOptions!: any;
 
-  keyPairs: { [key: string]: number } = {
-    signature_count: 0,
-  };
   async mounted() {
+    fetch(`/api/signatures/${this.$route.params.id}`).then(response => response.json()).then(
+      timescaleResponse => {
+        timescaleResponse.forEach((element: [string, number])=> {
+          this.historicalSignatureData.push([new Date(element[0]).getTime(), element[1]]);
+        });
+      }
+    );
+
+    this.$store.state.keyPairs["realtime:signature_count"] = this.$store.state.chartOptions.series.length;
+    this.$store.state.chartOptions.series.push({
+        color: "#080",
+        data: [], // sample data.
+        name: "Total Signatures"
+      });
+    
+    this.$store.state.keyPairs["historic:signature_count"] = this.$store.state.chartOptions.series.length;
+    this.$store.state.chartOptions.series.push({
+        visible: false,
+        showInLegend: false,
+        color: "#080",
+        data: this.historicalSignatureData, // sample data.
+        name: "Total Signatures"
+      });
+    this.update_function();
     this.$store.state.chartOptions.series[0].data.push(this.$store.state.petition.signature_count);
     this.$store.state.chartOptions.yAxis.softMin =
       this.$store.state.petition.signature_count - 10;
     this.$store.state.chartOptions.yAxis.softMax = this.$store.state.chartOptions.yAxis.softMin + 40;
-    console.log(this.chartOptions);
     setInterval(this.update_function, 5 * seconds);
   }
 
   async update_function() {
+    const now = Date.now();
     for (const key in this.$store.state.keyPairs) {
-      console.log(key + " " + this.getSignatureCount(key));
       this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].data.push(
-        this.getSignatureCount(key)
+        [now, this.getSignatureCount(key)]
       );
     }
   }
 
-  getSignatureCount(id: string): number {
-    if (!id.includes(":")) {
+  getSignatureCount(id: string): number | number[] {
+    const [type, name] = id.split(":");
+    if (name == "signature_count") {
       return this.$store.state.petition.signature_count;
     }
-    const [type, name] = id.split(":");
     let searchList = this.$store.state.petition[type];
     let start = 0;
     let end = searchList.length - 1;
@@ -68,21 +92,28 @@ export default class LineChart extends Vue {
 
     return 0;
   }
+
+  showHistory(show: boolean) {
+    this.showRealtime = !show;
+    for (const key in this.$store.state.keyPairs) {
+      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].visible = !show;
+      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].showInLegend = !show;
+    }
+    this.$store.state.chartOptions.series[this.$store.state.keyPairs["historic:signature_count"]].showInLegend = show;
+    this.$store.state.chartOptions.series[this.$store.state.keyPairs["historic:signature_count"]].visible = show;
+  }
 }
 </script>
 
-<style>
+<style scoped>
 .linechart > .contents {
   background: none;
 }
 
 .linechart {
-  border-style: solid;
-  border-color: lightgrey;
-  border-radius: 25px;
+  border-radius: 15px;
   border-width: 1px;
   background: none;
-  height: fit-content;
 }
 
 button {
@@ -93,8 +124,30 @@ button {
   height: 100%;
 }
 
-svg {
-  border-radius: 25px;
-  border-width: 1px;
+button {
+  bottom: 0px;
+  margin-left: 0%;
+  margin-right: 0%;
+  width: 50%;
+  z-index: 2;
+  border-width: 0px;
+  height: 30px;
+  border-top-width: 1px;
+  border-color: lightgrey;
 }
+
+button.right {
+  border-bottom-right-radius: 15px;
+  border-left-width: 1px;
+}
+
+button.left {
+  border-bottom-left-radius: 15px;
+}
+
+button:hover:not([disabled])  {
+  cursor: pointer;
+  background-color: grey;
+}
+
 </style>
