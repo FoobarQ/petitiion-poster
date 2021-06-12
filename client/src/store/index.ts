@@ -10,11 +10,12 @@ function titleify(input: string) {
   return `${x.join(" ")}`;
 }
 
-export default new Vuex.Store({
-  state: {
+const defaultState = (): AppState => {
+  return {
     petitionId: 0,
     petition: {},
     status: false,
+    ready: false,
     keyPairs: {},
     chartOptions: {
       series: [
@@ -22,8 +23,8 @@ export default new Vuex.Store({
           name: "Needs to be here for some reason.",
           color: "#000",
           data: [], // sample data.
-          pointStart: Date.now(),
           showInLegend: false,
+          visible: false,
         },
       ],
       xAxis: {
@@ -54,7 +55,11 @@ export default new Vuex.Store({
         text: "",
       },
     },
-  },
+  };
+};
+
+export default new Vuex.Store({
+  state: defaultState(),
   mutations: {
     setPetition: (state: AppState, petition) => {
       state.petition = petition;
@@ -62,6 +67,7 @@ export default new Vuex.Store({
     setPetitionId: (state: AppState, petitionId) => {
       state.petitionId = petitionId;
     },
+    resetStore: (state: AppState) => Object.assign(state, defaultState()),
   },
   getters: {
     link: (state) =>
@@ -85,11 +91,20 @@ export default new Vuex.Store({
   },
   actions: {
     setPetitionId: (context, petitionId) => {
+      context.state.ready = false;
+      context.commit("resetStore");
       context.commit("setPetitionId", petitionId);
-      handlePetitionResponse(context.getters.link).then((petition) => {
-        context.commit("setPetition", petition);
-        context.state.status = true;
-      });
+      handlePetitionResponse(context.getters.link)
+        .then((petition) => {
+          context.commit("setPetition", petition);
+          context.state.status = true;
+        })
+        .catch((err) => {
+          context.state.status = false;
+        })
+        .finally(() => {
+          context.state.ready = true;
+        });
     },
   },
   modules: {},
@@ -100,6 +115,7 @@ export interface AppState {
   petitionId: number;
   link?: string;
   status: boolean;
+  ready: boolean;
   keyPairs: {
     [key: string]: number;
   };

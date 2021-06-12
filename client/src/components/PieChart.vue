@@ -57,7 +57,7 @@ export default class PieChart extends Vue {
 
     plotOptions: {
       pie: {
-        height: 2000
+        height: 2000,
       },
     },
     title: {
@@ -112,18 +112,20 @@ export default class PieChart extends Vue {
   }
 
   updatePieChart() {
-    switch (this.pieChart) {
-      case "constituency":
-        this.signatures_by_constituencyToPieData();
-        break;
-      case "country":
-        this.signatures_by_countryToPieData();
-        break;
-      case "region":
-        this.signatures_by_regionToPieData();
-        break;
-      default:
-        console.error("fuck, no piechart source");
+    if (this.$store.state.status) {
+      switch (this.pieChart) {
+        case "constituency":
+          this.signatures_by_constituencyToPieData();
+          break;
+        case "country":
+          this.signatures_by_countryToPieData();
+          break;
+        case "region":
+          this.signatures_by_regionToPieData();
+          break;
+        default:
+          console.error("fuck, no piechart source");
+      }
     }
   }
 }

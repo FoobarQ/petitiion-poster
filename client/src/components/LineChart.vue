@@ -1,7 +1,11 @@
 <template>
   <div class="linechart" v-if="chartOptions.series">
     <chart v-bind:options="chartOptions" />
-    <button class="left" @click="showHistory(false)" :disabled="showRealtime">Real-time Data</button><button class="right" @click="showHistory(true)"  :disabled="!showRealtime">Historical Data</button>
+    <button class="left" @click="showHistory(false)" :disabled="showRealtime">
+      Real-time Data</button
+    ><button class="right" @click="showHistory(true)" :disabled="!showRealtime">
+      Historical Data
+    </button>
   </div>
 </template>
 
@@ -24,43 +28,48 @@ export default class LineChart extends Vue {
   chartOptions!: any;
 
   async mounted() {
-    fetch(`/api/signatures/${this.$route.params.id}`).then(response => response.json()).then(
-      timescaleResponse => {
-        timescaleResponse.forEach((element: [string, number])=> {
-          this.historicalSignatureData.push([new Date(element[0]).getTime(), element[1]]);
+    console.log("mounted");
+    if (this.$store.state.status) {
+      await fetch(`/api/signatures/${this.$route.params.id}`)
+        .then((response) => response.json())
+        .then((timescaleResponse) => {
+          timescaleResponse.forEach((element: [number, number]) => {
+            this.historicalSignatureData.push([element[0], element[1]]);
+          });
         });
-      }
-    );
+    }
 
-    this.$store.state.keyPairs["realtime:signature_count"] = this.$store.state.chartOptions.series.length;
+    this.$store.state.keyPairs["realtime:signature_count"] =
+      this.$store.state.chartOptions.series.length;
     this.$store.state.chartOptions.series.push({
-        color: "#080",
-        data: [], // sample data.
-        name: "Total Signatures"
-      });
-    
-    this.$store.state.keyPairs["historic:signature_count"] = this.$store.state.chartOptions.series.length;
+      color: "#080",
+      data: [], // sample data.
+      name: "Total Signatures",
+    });
+
+    this.$store.state.keyPairs["historic:signature_count"] =
+      this.$store.state.chartOptions.series.length;
     this.$store.state.chartOptions.series.push({
-        visible: false,
-        showInLegend: false,
-        color: "#080",
-        data: this.historicalSignatureData, // sample data.
-        name: "Total Signatures"
-      });
+      visible: false,
+      showInLegend: false,
+      color: "#080",
+      data: this.historicalSignatureData, // sample data.
+      name: "Total Signatures",
+    });
     this.update_function();
-    this.$store.state.chartOptions.series[0].data.push(this.$store.state.petition.signature_count);
     this.$store.state.chartOptions.yAxis.softMin =
       this.$store.state.petition.signature_count - 10;
-    this.$store.state.chartOptions.yAxis.softMax = this.$store.state.chartOptions.yAxis.softMin + 40;
+    this.$store.state.chartOptions.yAxis.softMax =
+      this.$store.state.chartOptions.yAxis.softMin + 40;
     setInterval(this.update_function, 5 * seconds);
   }
 
   async update_function() {
     const now = Date.now();
     for (const key in this.$store.state.keyPairs) {
-      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].data.push(
-        [now, this.getSignatureCount(key)]
-      );
+      this.$store.state.chartOptions.series[
+        this.$store.state.keyPairs[key]
+      ].data.push([now, this.getSignatureCount(key)]);
     }
   }
 
@@ -94,13 +103,22 @@ export default class LineChart extends Vue {
   }
 
   showHistory(show: boolean) {
+    console.log(this.$store.state.keyPairs);
     this.showRealtime = !show;
     for (const key in this.$store.state.keyPairs) {
-      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].visible = !show;
-      this.$store.state.chartOptions.series[this.$store.state.keyPairs[key]].showInLegend = !show;
+      this.$store.state.chartOptions.series[
+        this.$store.state.keyPairs[key]
+      ].visible = !show;
+      this.$store.state.chartOptions.series[
+        this.$store.state.keyPairs[key]
+      ].showInLegend = !show;
     }
-    this.$store.state.chartOptions.series[this.$store.state.keyPairs["historic:signature_count"]].showInLegend = show;
-    this.$store.state.chartOptions.series[this.$store.state.keyPairs["historic:signature_count"]].visible = show;
+    this.$store.state.chartOptions.series[
+      this.$store.state.keyPairs["historic:signature_count"]
+    ].showInLegend = show;
+    this.$store.state.chartOptions.series[
+      this.$store.state.keyPairs["historic:signature_count"]
+    ].visible = show;
   }
 }
 </script>
@@ -114,6 +132,7 @@ export default class LineChart extends Vue {
   border-radius: 15px;
   border-width: 1px;
   background: none;
+  height: fit-content;
 }
 
 button {
@@ -145,9 +164,8 @@ button.left {
   border-bottom-left-radius: 15px;
 }
 
-button:hover:not([disabled])  {
+button:hover:not([disabled]) {
   cursor: pointer;
   background-color: grey;
 }
-
 </style>

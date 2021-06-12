@@ -19,6 +19,7 @@ const routes: Array<RouteConfig> = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
+  { path: "/p/:id", redirect: { name: "Petition" } },
 ];
 
 const router = new VueRouter({

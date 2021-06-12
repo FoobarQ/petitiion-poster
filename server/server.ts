@@ -2,7 +2,6 @@ import express from "express";
 import "reflect-metadata";
 import path from "path";
 import { fileURLToPath } from "url";
-import sequelize from "sequelize";
 import pg from "pg";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,18 +55,22 @@ app.get("/api/tweet/:id", async (req, res) => {
 });
 
 app.get("/api/signatures/:id", async (req, res) => {
-  const result = await pool.query(
-    "SELECT time, signature_count FROM signatures WHERE id=$1",
-    [req.params.id]
-  );
+  try {
+    const result = await pool.query(
+      "SELECT time, signature_count FROM signatures WHERE id=$1",
+      [req.params.id]
+    );
 
-  if (result.rows) {
-    const response = [];
-    for (const row of result.rows) {
-      response.push([new Date(row.time).getTime(), row.signature_count]);
+    if (result.rows) {
+      const response = [];
+      for (const row of result.rows) {
+        response.push([new Date(row.time).getTime(), row.signature_count]);
+      }
+      response.sort((a, b) => a[0] - b[0]);
+      res.json(response);
     }
-    response.sort((a, b) => a[0] - b[0]);
-    res.json(response);
+  } catch (err) {
+    console.log(err);
   }
 });
 

@@ -3,9 +3,14 @@
     <div class="data">
       <h1>
         <a :href="link">{{ $store.state.petition.action }}</a>
+        #<input
+          :placeholder="$route.params.id"
+          v-model="newId"
+          v-on:keyup.enter="submit"
+        />
       </h1>
       <div>
-        <h2>by {{ $store.state.petition.creator_name || "Unknown"}}</h2>
+        <h2>by {{ $store.state.petition.creator_name || "Unknown" }}</h2>
       </div>
     </div>
   </div>
@@ -13,9 +18,9 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-import LineChart from "@/components/LineChart.vue";
-import PieChart from "@/components/PieChart.vue";
+import HelloWorld from "../components/HelloWorld.vue"; // @ is an alias to /src
+import LineChart from "../components/LineChart.vue";
+import PieChart from "../components/PieChart.vue";
 import { Getter } from "vuex-class";
 
 @Component({
@@ -28,39 +33,25 @@ import { Getter } from "vuex-class";
 export default class Header extends Vue {
   @Getter("link")
   link!: string;
+  newId = "";
+  submit() {
+    if (parseInt(this.newId)) {
+      this.$router
+        .push({ path: `/p/${this.newId}` })
+        .catch((err) => console.log(err));
+    }
+  }
 }
 </script>
 
-<style lang="scss">
-.header {
-  box-shadow: 0px 5px 3px 0px #ccc;
-  position: fixed;
-  height: 150px;
-  width: 100%;
-  top: 0px;
-  z-index: 2;
-}
-
-a {
-  text-decoration: none;
-  color: #080;
-}
-
-h1 + div {
-  position: relative;
-  background: #080;
-  color: white;
-  bottom: 0px;
-  margin: 0;
-
-  h2 {
-    margin: 0;
-  }
-}
-
-.data {
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
+<style lang="scss" scoped>
+input {
+  border-width: 0px;
+  display: inline;
+  padding: 0px;
+  margin: 0px;
+  max-width: 4em;
+  font: inherit;
+  font-size: 1em;
 }
 </style>

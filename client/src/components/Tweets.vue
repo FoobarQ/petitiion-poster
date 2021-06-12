@@ -1,15 +1,15 @@
 <template>
-<Tweet v-bind:id="tweetId"></Tweet>
+  <Tweet v-bind:id="tweetId"></Tweet>
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator';
-import { Tweet, Moment, Timeline } from 'vue-tweet-embed';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Tweet, Moment, Timeline } from "vue-tweet-embed";
 
 @Component({
   components: {
-    Tweet
-  }
+    Tweet,
+  },
 })
 export default class Twitter extends Vue {
   @Prop({}) tweetId!: string;
