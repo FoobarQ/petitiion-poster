@@ -1,14 +1,14 @@
-import sequelize from "sequelize";
+import pg from "pg";
 import { getPetitions } from "./utils";
 
-const sequelise = new sequelize.Sequelize(process.env.TIMESCALE_URL || "", {
-  dialect: "postgres",
-  protocol: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
+const client = new pg.Client({
+  user: process.env.TIMESCALE_USER || "user",
+  host: process.env.TIMESCALE_HOST || "host",
+  database: process.env.TIMESCALE_DB || "",
+  password: process.env.TIMESCALE_PASSWORD || "",
+  port: parseInt(process.env.TIMESCALE_PORT || "0"),
+  ssl: {
+    rejectUnauthorized: false,
   },
 });
 
@@ -27,20 +27,14 @@ async function updateSignatures() {
     }
 
     for (const petition of petitions) {
-      sequelise.query({
-        query:
-          "INSERT INTO signatures (time, id, signature_count) VALUES (?, ?, ?)",
-        values: [timestamp, petition.id, petition.attributes.signature_count],
-      });
+      client.query(
+        "INSERT INTO signatures (time, id, signature_count) VALUES ($1, $2, $3)",
+        [timestamp, petition.id, petition.attributes.signature_count]
+      );
     }
+
     page++;
   }
 }
-sequelise
-  .authenticate()
-  .then(() => {
-    updateSignatures();
-  })
-  .catch((err: any) => {
-    console.error("Unable to connect to the database:", err);
-  });
+
+updateSignatures();

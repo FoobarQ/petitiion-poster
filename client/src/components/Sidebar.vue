@@ -3,35 +3,39 @@
     <div>
       <ticker />
       <div class="key">
-      <template v-for="region of Object.keys(constituencies)">
-        <div v-bind:key="region">
-          <div class="region" @click="toggle(region)">
-            <h1>{{ region }}</h1>
-          </div>
-          <template v-if="constituencies[region].show">
-            <div
-              v-for="constituency of constituencies[region].data"
-              v-bind:key="constituency.ons_code"
-              class="constituency"
-            >
-              <input
-                type="checkbox"
-                :id="constituency.ons_code"
-                :name="constituency.ons_code"
-                @click="
-                  addLine(constituency.name, 'signatures_by_constituency')
-                "
-              />
-              <label :for="constituency.ons_code">{{
-                constituency.name
-              }}</label>
+        <template v-for="region of Object.keys(constituencies)">
+          <div v-bind:key="region">
+            <div class="region" @click="toggle(region)">
+              <h1>{{ region }}</h1>
             </div>
-          </template>
-        </div>
-      </template>
+            <template v-if="constituencies[region].show">
+              <div
+                v-for="constituency of constituencies[region].data"
+                v-bind:key="constituency.ons_code"
+                class="constituency"
+              >
+                <input
+                  type="checkbox"
+                  :id="constituency.ons_code"
+                  :name="constituency.ons_code"
+                  @click="
+                    addLine(constituency.name, 'signatures_by_constituency')
+                  "
+                />
+                <label :for="constituency.ons_code">{{
+                  constituency.name
+                }}</label>
+              </div>
+            </template>
+          </div>
+        </template>
       </div>
       <div class="follow">
-        Follow <a href="https://twitter.com/intent/user?screen_name=UKPetitionPosts">@UKPetitionPosts on Twitter</a> to stay up to date with government petitions.
+        Follow
+        <a href="https://twitter.com/intent/user?screen_name=UKPetitionPosts"
+          >@UKPetitionPosts on Twitter</a
+        >
+        to stay up to date with government petitions.
       </div>
     </div>
   </div>
@@ -89,13 +93,14 @@ export default class Sidebar extends Vue {
       return;
     }
     if (type) {
-      this.$store.state.keyPairs[type + ":" + name] = this.$store.state.chartOptions.series.length;
+      this.$store.state.keyPairs[type + ":" + name] =
+        this.$store.state.chartOptions.series.length;
       this.$store.state.chartOptions.series.push({
-      data: [],
-      pointStart: Date.now(),
-      pointInterval: 10 * seconds,
-      name,
-    });
+        data: [],
+        pointStart: Date.now(),
+        pointInterval: 10 * seconds,
+        name,
+      });
     }
   }
 

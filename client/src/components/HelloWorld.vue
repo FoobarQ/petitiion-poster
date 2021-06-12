@@ -22,6 +22,7 @@ a {
 .hello {
   max-height: 200px;
   width: 1992px;
+  height: fit-content;
 }
 p {
   color: #080;

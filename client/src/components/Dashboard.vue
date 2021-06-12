@@ -3,19 +3,18 @@
     <hello-world />
     <line-chart />
     <pie-chart />
-    <twitter v-if="tweetId" :tweetId="tweetId"/>
-    <happiness-chart v-if="$store.state.petition.closed_at"/>
+    <twitter v-if="tweetId" :tweetId="tweetId" />
+    <happiness-chart v-if="$store.state.petition.closed_at" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import PieChart from "@/components/PieChart.vue";
-import LineChart from "@/components/LineChart.vue";
-import HelloWorld from "@/components/HelloWorld.vue";
-import Twitter from "@/components/Tweets.vue";
-import HappinessForm from '@/components/HappinessForm.vue';
-
+import PieChart from "../components/PieChart.vue";
+import LineChart from "../components/LineChart.vue";
+import HelloWorld from "../components/HelloWorld.vue";
+import Twitter from "../components/Tweets.vue";
+import HappinessForm from "../components/HappinessForm.vue";
 
 @Component({
   components: {
@@ -23,17 +22,17 @@ import HappinessForm from '@/components/HappinessForm.vue';
     LineChart,
     Twitter,
     HelloWorld,
-    HappinessForm
+    HappinessForm,
   },
 })
 export default class Dashboard extends Vue {
   tweetId = "";
-  mounted() {
-    fetch(`/api/tweet/${this.$route.params.id}`).then(response => response.json()).then(
-      tId => {
+  beforeMount() {
+    fetch(`/api/tweet/${this.$route.params.id}`)
+      .then((response) => response.json())
+      .then((tId) => {
         this.tweetId = tId;
-      }
-    );
+      });
   }
 }
 </script>
