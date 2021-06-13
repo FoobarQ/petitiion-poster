@@ -74,6 +74,42 @@ app.get("/api/signatures/:id", async (req, res) => {
   }
 });
 
+app.get("/api/tweets/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT time, tweetid FROM tweets WHERE id=$1",
+      [req.params.id]
+    );
+
+    if (result.rows) {
+      const response = [];
+      for (const row of result.rows) {
+        response.push([new Date(row.time).getTime(), row.tweetid]);
+      }
+      response.sort((a, b) => a[0] - b[0]);
+      res.json(response);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/api/actions", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, action FROM actions");
+
+    if (result.rows) {
+      const response = [];
+      for (const row of result.rows) {
+        response.push([row.id, row.action]);
+      }
+      res.json(response);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.get(/.*/, (req, res) => res.sendFile(__dirname + "/public/index.html"));
 
 app.listen(port, () => {
