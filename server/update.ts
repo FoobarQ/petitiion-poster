@@ -3,6 +3,18 @@ import typeorm from "typeorm";
 import Petition from "./entity/Petition.js";
 import fetch from "node-fetch";
 import request from "request-promise";
+import pg from "pg";
+
+const client = new pg.Pool({
+  user: process.env.TIMESCALE_USER || "user",
+  host: process.env.TIMESCALE_HOST || "host",
+  database: process.env.TIMESCALE_DB || "",
+  password: process.env.TIMESCALE_PASSWORD || "",
+  port: parseInt(process.env.TIMESCALE_PORT || "0"),
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
   ? parseInt(process.env.UPDATE_LIMIT)
@@ -88,7 +100,7 @@ typeorm
                 }
               })
           )
-          .then((tweets) => updateTweet(petition.tweetId, tweets))
+          .then((tweets) => updateTweet(petition.tweetId, tweets, petition.id))
           .then((tweetId) => {
             petition.tweetId = tweetId;
             connection.manager.update(
@@ -121,7 +133,11 @@ typeorm
   })
   .catch((error) => console.log(error));
 
-async function updateTweet(tweetId: string, tweetBodies: string[]) {
+async function updateTweet(
+  tweetId: string,
+  tweetBodies: string[],
+  petitionId: string
+) {
   let tweetConfirmation = tweetId;
 
   for (const body of tweetBodies) {
@@ -130,6 +146,10 @@ async function updateTweet(tweetId: string, tweetBodies: string[]) {
     await request(options, (error: any, response) => {
       if (error) throw new Error(error);
       tweetConfirmation = JSON.parse(response.body).id_str;
+      return client.query(
+        "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
+        [JSON.parse(response.body).created_at, petitionId, tweetConfirmation]
+      );
     });
   }
 

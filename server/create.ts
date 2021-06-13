@@ -3,6 +3,18 @@ import typeorm from "typeorm";
 import Petition from "./entity/Petition";
 import request from "request-promise";
 import { getPetitions } from "./utils";
+import pg from "pg";
+
+const client = new pg.Pool({
+  user: process.env.TIMESCALE_USER || "user",
+  host: process.env.TIMESCALE_HOST || "host",
+  database: process.env.TIMESCALE_DB || "",
+  password: process.env.TIMESCALE_PASSWORD || "",
+  port: parseInt(process.env.TIMESCALE_PORT || "0"),
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 const options = {
   method: "POST",
@@ -66,7 +78,9 @@ typeorm
           console.log("Making tweet...");
           await composeTweet(petition)
             .then((tweet) => postTweet(tweet))
-            .then((tweetId) => {
+            .then(async (tweetConfirmation) => {
+              const tweetId = tweetConfirmation.id_str;
+              const tweetTimestamp = tweetConfirmation.created_at;
               console.log("  Success.");
               console.log("Updating database...");
               const petitionEntry = new Petition();
@@ -83,6 +97,11 @@ typeorm
               petitionEntry.id = String(petition.id);
               petitionEntry.signature_count =
                 petition.attributes.signature_count;
+
+              await client.query(
+                "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
+                [tweetTimestamp, petition.id, tweetId]
+              );
               return connection.manager.save(petitionEntry);
             })
             .then((pet) => {
@@ -150,11 +169,11 @@ async function composeTweet(petition: PetitionInterface) {
 }
 
 async function postTweet(tweet: string) {
-  let tweetConfirmation;
+  let tweetConfirmation: any;
   options.form.status = tweet;
   await request(options, (error: any, response) => {
     if (error) throw new Error(error);
-    tweetConfirmation = JSON.parse(response.body).id_str;
+    tweetConfirmation = JSON.parse(response.body);
   });
 
   return tweetConfirmation;
