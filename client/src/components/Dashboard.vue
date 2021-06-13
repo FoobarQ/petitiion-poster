@@ -4,7 +4,6 @@
     <line-chart />
     <pie-chart />
     <twitter v-if="tweetId" :tweetId="tweetId" />
-    <happiness-chart v-if="$store.state.petition.closed_at" />
   </div>
 </template>
 
@@ -27,7 +26,7 @@ import HappinessForm from "../components/HappinessForm.vue";
 })
 export default class Dashboard extends Vue {
   tweetId = "";
-  beforeMount() {
+  beforeMount(): void {
     fetch(`/api/tweet/${this.$route.params.id}`)
       .then((response) => response.json())
       .then((tId) => {

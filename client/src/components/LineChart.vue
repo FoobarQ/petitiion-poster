@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
 import { Getter } from "vuex-class";
 
@@ -27,7 +27,7 @@ export default class LineChart extends Vue {
   @Getter("chartOptions")
   chartOptions!: any;
 
-  async mounted() {
+  async mounted(): Promise<void> {
     console.log("mounted");
     if (this.$store.state.status) {
       await fetch(`/api/signatures/${this.$route.params.id}`)
@@ -64,13 +64,14 @@ export default class LineChart extends Vue {
     setInterval(this.update_function, 5 * seconds);
   }
 
-  async update_function() {
+  async update_function(): Promise<void> {
     const now = Date.now();
     for (const key in this.$store.state.keyPairs) {
       this.$store.state.chartOptions.series[
         this.$store.state.keyPairs[key]
       ].data.push([now, this.getSignatureCount(key)]);
     }
+    return;
   }
 
   getSignatureCount(id: string): number | number[] {
@@ -102,7 +103,7 @@ export default class LineChart extends Vue {
     return 0;
   }
 
-  showHistory(show: boolean) {
+  showHistory(show: boolean): void {
     console.log(this.$store.state.keyPairs);
     this.showRealtime = !show;
     for (const key in this.$store.state.keyPairs) {
@@ -129,7 +130,7 @@ export default class LineChart extends Vue {
 }
 
 .linechart {
-  border-radius: 15px;
+  border-radius: 10px;
   border-width: 1px;
   background: none;
   height: fit-content;
@@ -156,16 +157,6 @@ button {
 }
 
 button.right {
-  border-bottom-right-radius: 15px;
   border-left-width: 1px;
-}
-
-button.left {
-  border-bottom-left-radius: 15px;
-}
-
-button:hover:not([disabled]) {
-  cursor: pointer;
-  background-color: grey;
 }
 </style>
