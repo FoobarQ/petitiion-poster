@@ -2,10 +2,29 @@
   <div class="piechart">
     <div class="contents">
       <chart :options="chartOptions"></chart>
+      <h2>Realtime Piechart</h2>
       <div class="options">
-        <button v-on:click="setPieChart('constituency')">constituency</button>
-        <button v-on:click="setPieChart('country')">country</button>
-        <button v-on:click="setPieChart('region')">region</button>
+        <button
+          class="left"
+          v-on:click="setPieChart('constituency')"
+          :disabled="pieChart === 'constituency'"
+        >
+          constituency
+        </button>
+        <button
+          class="mid"
+          v-on:click="setPieChart('country')"
+          :disabled="pieChart === 'country'"
+        >
+          country
+        </button>
+        <button
+          class="right"
+          v-on:click="setPieChart('region')"
+          :disabled="pieChart === 'region'"
+        >
+          region
+        </button>
       </div>
     </div>
   </div>
@@ -131,7 +150,7 @@ export default class PieChart extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style>
 .piechart > .contents {
   background: none;
   height: fit-content;
@@ -151,7 +170,42 @@ button {
 }
 
 svg {
-  border-top-right-radius: 15px;
-  border-top-left-radius: 15px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+button {
+  height: 32px;
+  width: 34%;
+  margin: 0px;
+  border-width: 0px;
+  border-top-width: 1px;
+  border-color: lightgrey;
+  border-style: solid;
+}
+
+button.mid {
+  width: 32%;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-color: lightgrey;
+}
+
+button.left {
+  border-bottom-left-radius: 10px;
+}
+
+button.right {
+  border-bottom-right-radius: 10px;
+}
+
+button:hover:not([disabled]) {
+  cursor: pointer;
+  background-color: darkgrey;
+}
+
+button[disabled] {
+  background-color: darkgrey;
+  color: white;
 }
 </style>
