@@ -146,9 +146,13 @@ async function updateTweet(
     await request(options, (error: any, response) => {
       if (error) throw new Error(error);
       tweetConfirmation = JSON.parse(response.body).id_str;
+      const timestamp = new Date(JSON.parse(response.body).created_at)
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", "");
       return client.query(
         "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
-        [JSON.parse(response.body).created_at, petitionId, tweetConfirmation]
+        [timestamp, petitionId, tweetConfirmation]
       );
     });
   }
