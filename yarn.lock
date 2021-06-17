@@ -13949,6 +13949,11 @@ vue-class-component@^7.2.3:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.2.6.tgz#8471e037b8e4762f5a464686e19e5afc708502e4"
   integrity sha512-+eaQXVrAm/LldalI272PpDe3+i4mPis0ORiMYxF6Ae4hyuCh15W8Idet7wPUEs4N4YptgFHGys4UrgNQOMyO6w==
 
+vue-component-media-queries@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vue-component-media-queries/-/vue-component-media-queries-1.0.0.tgz#3be97b6b2ed32facfce7cb90d436ad3ecf741210"
+  integrity sha512-fcGjDNqfOjPkk9hfs4x+K8d0nYUSwDzpcrNwLyHCaGWImEoQXGU2gROCBMXnBTErgzIRNgyYwCqCeB+p6guLtQ==
+
 vue-eslint-parser@^7.0.0:
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.6.0.tgz#01ea1a2932f581ff244336565d712801f8f72561"

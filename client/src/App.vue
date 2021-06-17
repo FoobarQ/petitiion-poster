@@ -1,9 +1,20 @@
 <template>
   <div id="app">
-    <div id="nav"></div>
     <router-view :key="$route.fullPath" />
   </div>
 </template>
+
+<script lang="ts">
+import { MediaQueryProvider } from "vue-component-media-queries";
+import { Vue, Component } from "vue-property-decorator";
+
+@Component({
+  components: {
+    MediaQueryProvider,
+  },
+})
+export default class App extends Vue {}
+</script>
 
 <style lang="scss">
 #app {
@@ -12,29 +23,6 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: white;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-
-.header {
-  box-shadow: 0px 5px 3px 0px #ccc;
-  position: fixed;
-  height: 150px;
-  width: 100%;
-  top: 0px;
-  z-index: 2;
 }
 
 a {
@@ -58,5 +46,21 @@ h1 + div {
   position: absolute;
   bottom: 0px;
   width: 100%;
+}
+.title.mobile {
+  display: none;
+}
+
+@media (max-width: 1080px) {
+  body {
+    margin: 0px;
+  }
+  .title.mobile {
+    display: block;
+    min-width: 98%;
+  }
+  .title.desktop {
+    display: none;
+  }
 }
 </style>

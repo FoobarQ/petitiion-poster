@@ -1,29 +1,34 @@
 <template>
   <div class="piechart">
-    <div class="contents">
+    <div class="title desktop">
+      <h1>Pie Chart</h1>
+    </div>
+    <div class="title mobile" @click="() => (show = !show)">
+      <h1>Pie Chart</h1>
+    </div>
+    <div class="contents" v-if="show">
       <chart :options="chartOptions"></chart>
-      <h2>Realtime Piechart</h2>
       <div class="options">
         <button
           class="left"
           v-on:click="setPieChart('constituency')"
           :disabled="pieChart === 'constituency'"
         >
-          constituency
+          Constituency
         </button>
         <button
           class="mid"
           v-on:click="setPieChart('country')"
           :disabled="pieChart === 'country'"
         >
-          country
+          Country
         </button>
         <button
           class="right"
           v-on:click="setPieChart('region')"
           :disabled="pieChart === 'region'"
         >
-          region
+          Region
         </button>
       </div>
     </div>
@@ -61,7 +66,7 @@ interface Constituency {
   },
 })
 export default class PieChart extends Vue {
-  @Prop() private petitionId!: number;
+  show = true;
   signatures_by_region: any[] = [];
   signatures_by_country: any[] = [];
   signatures_by_constituency: any[] = [];
@@ -73,10 +78,18 @@ export default class PieChart extends Vue {
         data: [{}], // sample data.
       },
     ],
+    chart: {
+      styledMode: false,
+      height: "53%",
+    },
 
     plotOptions: {
       pie: {
-        height: 2000,
+        slicedOffset: 0,
+        size: "100%",
+        dataLabels: {
+          enabled: false,
+        },
       },
     },
     title: {
@@ -153,12 +166,10 @@ export default class PieChart extends Vue {
 <style>
 .piechart > .contents {
   background: none;
-  height: fit-content;
 }
 
 .piechart {
-  height: 500px;
-  width: 650px;
+  width: 30%;
 }
 
 button {
@@ -207,5 +218,11 @@ button:hover:not([disabled]) {
 button[disabled] {
   background-color: darkgrey;
   color: white;
+}
+
+@media (max-width: 1080px) {
+  .piechart {
+    width: 98%;
+  }
 }
 </style>

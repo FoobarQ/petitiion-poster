@@ -1,27 +1,41 @@
 <template>
-  <div class="dash flex-container">
-    <hello-world />
-    <line-chart />
-    <pie-chart />
-    <twitter v-if="tweetId" :tweetId="tweetId" />
-  </div>
+  <MatchMedia v-slot="{ mobile }">
+    <div class="dash flex-container">
+      <template v-if="mobile">
+        <happiness-form v-if="$store.state.petition.closed_at" />
+        <description />
+        <line-chart />
+        <pie-chart />
+        <twitter v-if="tweetId" :tweetId="tweetId" />
+      </template>
+      <template v-else>
+        <happiness-form v-if="$store.state.petition.closed_at" />
+        <description />
+        <line-chart />
+        <pie-chart />
+        <twitter v-if="tweetId" :tweetId="tweetId" />
+      </template>
+    </div>
+  </MatchMedia>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import PieChart from "../components/PieChart.vue";
 import LineChart from "../components/LineChart.vue";
-import HelloWorld from "../components/HelloWorld.vue";
+import Description from "./Description.vue";
 import Twitter from "../components/Tweets.vue";
 import HappinessForm from "../components/HappinessForm.vue";
+import { MediaQueryProvider, MatchMedia } from "vue-component-media-queries";
 
 @Component({
   components: {
     PieChart,
     LineChart,
     Twitter,
-    HelloWorld,
+    Description,
     HappinessForm,
+    MatchMedia,
   },
 })
 export default class Dashboard extends Vue {
@@ -39,24 +53,43 @@ export default class Dashboard extends Vue {
 <style>
 .dash {
   position: fixed;
-  width: 100%;
-  top: 150px;
-  left: 310px;
+  top: 10%;
+  left: 11.3%;
   overflow-y: auto;
-  bottom: 0px;
+  overflow-x: auto;
   right: 0px;
+  bottom: 0px;
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   background-color: rgb(247, 247, 247);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.dash::-webkit-scrollbar {
+  display: none;
 }
 
 .dash > div {
-  background-color: white;
-  margin: 20px;
+  margin: 1.25em;
   border-style: solid;
   border-color: lightgrey;
   border-radius: 10px;
   border-width: 1px;
   background: white;
+}
+
+@media (max-width: 1080px) {
+  .dash {
+    left: 0px;
+    top: 0px;
+    margin-bottom: 170px;
+  }
+
+  .dash > div {
+    margin-top: 1%;
+    margin-bottom: 1%;
+  }
 }
 </style>

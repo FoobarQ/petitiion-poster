@@ -27,10 +27,14 @@ div.twitter-tweet.twitter-tweet-rendered {
 .flex-container > div {
   border: none;
   padding: none;
-  width: 550px;
   height: fit-content;
-  margin-top: 10px;
-  margin-bottom: 10px;
   background: none;
+  width: 550px;
+}
+
+@media (max-width: 1080px) {
+  .flex-container > div {
+    width: 90%;
+  }
 }
 </style>

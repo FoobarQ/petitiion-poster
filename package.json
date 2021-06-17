@@ -12,6 +12,8 @@
     "start": "cd server && yarn start",
     "serve": "cd client && yarn serve",
     "signatures": "cd server && yarn signatures",
-    "compress": "cd server && yarn compress"
+    "compress": "cd server && yarn compress",
+    "dev-server": "cd server && yarn build && yarn start",
+    "dev-client": "cd client && yarn serve"
   }
 }

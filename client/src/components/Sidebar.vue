@@ -137,16 +137,16 @@ export default class Sidebar extends Vue {
 }
 
 .sidebar > div {
-  width: 300px;
+  width: 11%;
   float: left;
-  top: 150px;
+  top: 10%;
   height: 100%;
   border-right-color: lightgrey;
   border-right-style: solid;
   border-right-width: 1px;
   position: fixed;
   z-index: 1;
-  bottom: 50px;
+  bottom: 4%;
 }
 
 .key {

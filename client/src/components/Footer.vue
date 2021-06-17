@@ -1,13 +1,9 @@
 <template>
-  <div class="header">
+  <div class="footer">
     <div class="data">
       <h1>
-        <a :href="link">{{ $store.state.petition.action }}</a>
-        #<input
-          :placeholder="$route.params.id"
-          v-model="newId"
-          v-on:keyup.enter="submit"
-        />
+        <a>{{ $store.state.petition.action }}</a>
+        #{{ $route.params.id }}
       </h1>
       <div>
         <h2 v-if="$store.state.petition.creator_name">
@@ -24,7 +20,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 @Component({})
-export default class Header extends Vue {
+export default class Footer extends Vue {
   @Getter("link")
   link!: string;
   newId = "";
@@ -56,31 +52,21 @@ input:focus {
   outline: none;
 }
 
-.header {
+.footer {
   position: fixed;
-  height: 10%;
+  height: fit-content;
+  min-height: 170px;
+  background: white;
   width: 100%;
-  z-index: 2;
+  z-index: 200;
+  bottom: 0px;
+  box-shadow: 0px -1px 3px 1px #ccc;
 }
 
-@media (max-width: 1080px) {
-  .header {
-    bottom: 0px;
-    box-shadow: 0px -5px 3px 0px #ccc;
-  }
-}
-
-@media (max-width: infinity) {
-  .header {
-    top: 0px;
-    box-shadow: 0px 5px 3px 0px #ccc;
-    min-height: 10%;
-  }
-}
-
-.header h1 {
-  font-size: 2em;
+.footer h1 {
+  font-size: 1.5em;
   background: none;
+  padding: auto;
 }
 
 .data {
