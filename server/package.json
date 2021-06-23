@@ -50,7 +50,8 @@
       "delete": "node --experimental-specifier-resolution=node ./build/delete",
       "update": "node --experimental-specifier-resolution=node ./build/update",
       "start": "node --experimental-specifier-resolution=node ./build/server",
-      "signatures": "node --experimental-specifier-resolution=node ./build/updateSignatureCount"
+      "signatures": "node --experimental-specifier-resolution=node ./build/updateSignatureCount",
+      "compress": "node --experimental-specifier-resolution=node ./build/compressSignatureCount"
    },
    "type": "module"
 }
