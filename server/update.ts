@@ -4,6 +4,7 @@ import Petition from "./entity/Petition.js";
 import fetch from "node-fetch";
 import request from "request-promise";
 import pg from "pg";
+import { shorten } from "./utils.js";
 
 const client = new pg.Pool({
   user: process.env.TIMESCALE_USER || "user",
@@ -79,9 +80,15 @@ typeorm
                 const tweets = [];
 
                 if (!petition.response && government_response) {
-                  let tweetBody = `Govt. response from ${government_response.responded_on}:\n\n`;
-                  tweetBody += `"${government_response.summary}"\n\n`;
-                  tweetBody += `Click the link above for more info.`;
+                  const tweetstart = `Govt. response from ${government_response.responded_on}:\n\n`;
+                  const tweetEnd = `Click the link above for more info.`;
+                  const tweetBody = `"${
+                    tweetstart +
+                    shorten(
+                      government_response.summary,
+                      280 - (tweetstart.length + tweetEnd.length + 4)
+                    )
+                  }"\n\n${tweetEnd}`;
                   tweets.push(tweetBody);
                   petition.response = true;
                 }
@@ -94,6 +101,7 @@ typeorm
                 }
 
                 if (tweets.length > 0) {
+                  console.log(tweets);
                   return resolve(tweets);
                 } else {
                   return reject(`it has no updates`);

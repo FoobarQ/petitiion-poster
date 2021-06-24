@@ -2,7 +2,7 @@ import "reflect-metadata";
 import typeorm from "typeorm";
 import Petition from "./entity/Petition";
 import request from "request-promise";
-import { getPetitions } from "./utils";
+import { getPetitions, shorten } from "./utils";
 import pg from "pg";
 
 const client = new pg.Pool({
@@ -156,14 +156,14 @@ async function composeTweet(petition: PetitionInterface) {
       status += ", debate date not set";
     }
   }
-  let tweet = `Petition: ${action}`;
-  tweet += status ? `\n\n${status}.` : "\n\n";
+  let tweet = status ? `\n\n${status}.` : "\n\n";
   tweet += `\nDeadline: ${deadline.toLocaleDateString("en-GB", {
     timeZone: "UTC",
   })}`;
   tweet += `\n${
     topics ? topics.map((element) => hashtagify(element)) : ""
   }#UKPetition #UK #UnitedKingdom`;
+  tweet = `Petition: ${shorten(action, 280 - (tweet.length + 34)) + tweet}`;
   tweet += `\n${links.self.replace(".json", "")}`;
   return tweet;
 }
