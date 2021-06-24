@@ -51,7 +51,8 @@
       "update": "node --experimental-specifier-resolution=node ./build/update",
       "start": "node --experimental-specifier-resolution=node ./build/server",
       "signatures": "node --experimental-specifier-resolution=node ./build/updateSignatureCount",
-      "compress": "node --experimental-specifier-resolution=node ./build/compressSignatureCount"
+      "compress": "node --experimental-specifier-resolution=node ./build/compressSignatureCount",
+      "test": "node --experimental-specifier-resolution=node ./build/test"
    },
    "type": "module"
 }

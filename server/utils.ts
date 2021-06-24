@@ -50,3 +50,17 @@ export async function getPetitions(
 
   return x.petitions;
 }
+
+export function shorten(long: string, targetLength: number) {
+  if (long.length <= targetLength) {
+    return long;
+  }
+
+  if (long.endsWith('"') || long.endsWith("'")) {
+    return `${long.slice(0, targetLength - 4)}...${long.slice(
+      long.length - 1
+    )}`;
+  }
+
+  return long.slice(0, targetLength);
+}
