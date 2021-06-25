@@ -60,7 +60,6 @@ import {
 } from "@/assets/constituencies";
 import Ticker from "@/components/Ticker.vue";
 
-const seconds = 1000;
 interface Constituencies {
   [Region: string]: {
     data: Array<Constituency>;
@@ -88,7 +87,7 @@ export default class Sidebar extends Vue {
     "Yorkshire & the Humber": { data: Yorkshire, show: false },
   };
 
-  addLine(name: string, type?: string) {
+  addLine(name: string, type?: string): void {
     if (this.$store.state.keyPairs[type + ":" + name] !== undefined) {
       return;
     }
@@ -97,18 +96,17 @@ export default class Sidebar extends Vue {
         this.$store.state.chartOptions.series.length;
       this.$store.state.chartOptions.series.push({
         data: [],
-        pointStart: Date.now(),
-        pointInterval: 10 * seconds,
+        type: "spline",
         name,
       });
     }
   }
 
-  toggle(id: string) {
+  toggle(id: string): void {
     this.constituencies[id].show = !this.constituencies[id].show;
   }
 
-  mounted() {
+  mounted(): void {
     this.addLine("Total Signatures");
   }
 }
@@ -125,14 +123,14 @@ export default class Sidebar extends Vue {
   }
 }
 
-.region:hover {
+.region:hover,
+.constituency:hover {
   background: rgb(240, 240, 240);
 }
 
 .constituency {
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  border-color: green;
   text-align: left;
 }
 
