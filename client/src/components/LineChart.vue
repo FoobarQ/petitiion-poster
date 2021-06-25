@@ -1,10 +1,10 @@
 <template>
   <div class="linechart" v-if="chartOptions.series">
     <div class="title desktop">
-      <h1>Signature Graph</h1>
+      <h1>Realtime Signature Count</h1>
     </div>
     <div class="title mobile" @click="() => (show = !show)">
-      <h1>Signature Graph</h1>
+      <h1>Realtime Signature Count</h1>
     </div>
     <chart v-bind:options="chartOptions" v-show="show" />
     <button
@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Chart } from "highcharts-vue";
+import { Chart, ChartOptions } from "highcharts-vue";
 import { Getter } from "vuex-class";
 
 const seconds = 1000;
@@ -42,7 +42,7 @@ export default class LineChart extends Vue {
   show = true;
 
   @Getter("chartOptions")
-  chartOptions!: any;
+  chartOptions!: ChartOptions;
 
   async mounted(): Promise<void> {
     console.log("mounted");
@@ -123,7 +123,6 @@ export default class LineChart extends Vue {
   }
 
   showHistory(show: boolean): void {
-    console.log(this.$store.state.keyPairs);
     this.showRealtime = !show;
     for (const key in this.$store.state.keyPairs) {
       this.$store.state.chartOptions.series[

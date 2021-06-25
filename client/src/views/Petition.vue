@@ -79,14 +79,13 @@ export default class Petition extends Vue {
     }
   }
 
-  async setTick(id: string) {
+  async setTick(id: string): Promise<void> {
     clearInterval(this.tick);
     await this.$store.dispatch("setPetitionId", id);
     this.tick = setInterval(this.handlePetitionResponse, 5 * seconds);
-    return;
   }
 
-  beforeDestroy() {
+  beforeDestroy(): void {
     clearInterval(this.tick);
   }
 }

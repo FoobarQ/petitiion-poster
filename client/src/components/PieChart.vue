@@ -1,10 +1,17 @@
 <template>
   <div class="piechart">
     <div class="title desktop">
-      <h1>Pie Chart</h1>
+      <h1>Signature Distribution</h1>
+      <small
+        ><a
+          :href="`https://petitionmap.unboxedconsulting.com/?petition=${$store.state.petitionId}`"
+        >
+          see on a map
+        </a></small
+      >
     </div>
     <div class="title mobile" @click="() => (show = !show)">
-      <h1>Pie Chart</h1>
+      <h1>Signature Distribution</h1>
     </div>
     <div class="contents" v-if="show">
       <chart :options="chartOptions"></chart>
@@ -36,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { Chart } from "highcharts-vue";
 
 const seconds = 1000;
@@ -67,9 +74,7 @@ interface Constituency {
 })
 export default class PieChart extends Vue {
   show = true;
-  signatures_by_region: any[] = [];
-  signatures_by_country: any[] = [];
-  signatures_by_constituency: any[] = [];
+
   chartOptions = {
     series: [
       {
@@ -80,7 +85,7 @@ export default class PieChart extends Vue {
     ],
     chart: {
       styledMode: false,
-      height: "53%",
+      height: "400",
     },
 
     plotOptions: {
@@ -98,7 +103,7 @@ export default class PieChart extends Vue {
   };
   pieChart = "region";
 
-  signatures_by_regionToPieData() {
+  signatures_by_regionToPieData(): void {
     const x = this.$store.state.petition.signatures_by_region.map(
       (region: Region) => {
         return {
@@ -107,10 +112,10 @@ export default class PieChart extends Vue {
         };
       }
     );
-    this.chartOptions.series[0].data = x;
+    this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
-  signatures_by_countryToPieData() {
+  signatures_by_countryToPieData(): void {
     const x = this.$store.state.petition.signatures_by_country.map(
       (country: Country) => {
         return {
@@ -119,10 +124,10 @@ export default class PieChart extends Vue {
         };
       }
     );
-    this.chartOptions.series[0].data = x;
+    this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
-  signatures_by_constituencyToPieData() {
+  signatures_by_constituencyToPieData(): void {
     const x = this.$store.state.petition.signatures_by_constituency.map(
       (constituency: Constituency) => {
         return {
@@ -131,19 +136,19 @@ export default class PieChart extends Vue {
         };
       }
     );
-    this.chartOptions.series[0].data = x;
+    this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
-  mounted() {
-    setInterval(this.updatePieChart, 5 * seconds);
+  mounted(): void {
+    setInterval(this.updatePieChart, 15 * seconds);
   }
 
-  setPieChart(i: string) {
+  setPieChart(i: string): void {
     this.pieChart = i;
     this.updatePieChart();
   }
 
-  updatePieChart() {
+  updatePieChart(): void {
     if (this.$store.state.status) {
       switch (this.pieChart) {
         case "constituency":
@@ -159,6 +164,21 @@ export default class PieChart extends Vue {
           console.error("fuck, no piechart source");
       }
     }
+  }
+
+  filterPieData(
+    data: { name: string; y: number }[]
+  ): { name: string; y: number }[] {
+    let returnData = [{ name: "other", y: 0 }];
+    data.forEach((value) => {
+      if (value.y > this.$store.state.petition.signature_count / 360) {
+        returnData.push(value);
+      } else {
+        returnData[0].y += value.y;
+      }
+    });
+    console.log(returnData);
+    return returnData;
   }
 }
 </script>
@@ -218,6 +238,10 @@ button:hover:not([disabled]) {
 button[disabled] {
   background-color: darkgrey;
   color: white;
+}
+
+.piechart > .desktop > h1 {
+  margin-bottom: 0.4%;
 }
 
 @media (max-width: 1080px) {

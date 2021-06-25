@@ -26,7 +26,7 @@ import LineChart from "../components/LineChart.vue";
 import Description from "./Description.vue";
 import Twitter from "../components/Tweets.vue";
 import HappinessForm from "../components/HappinessForm.vue";
-import { MediaQueryProvider, MatchMedia } from "vue-component-media-queries";
+import { MatchMedia } from "vue-component-media-queries";
 
 @Component({
   components: {

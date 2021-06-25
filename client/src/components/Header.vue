@@ -27,8 +27,10 @@ import { Getter } from "vuex-class";
 export default class Header extends Vue {
   @Getter("link")
   link!: string;
+
   newId = "";
-  submit() {
+
+  submit(): void {
     if (parseInt(this.newId)) {
       this.$router
         .push({ path: `/p/${this.newId}` })
