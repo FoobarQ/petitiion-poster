@@ -8,9 +8,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 
-const seconds = 1000;
 @Component({})
 export default class Ticker extends Vue {}
 </script>
@@ -25,6 +24,7 @@ export default class Ticker extends Vue {}
 
 h1 {
   margin-bottom: 2px;
+  font-size: 20pt;
 }
 
 h2 {

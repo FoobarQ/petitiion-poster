@@ -41,8 +41,7 @@ const defaultState = (): AppState => {
         visible: false,
       },
       chart: {
-        height: 470,
-        width: 1300,
+        ignoreHiddenSeries: true,
       },
       plotOptions: {
         line: {

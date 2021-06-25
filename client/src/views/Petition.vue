@@ -1,20 +1,29 @@
 <template>
-  <div class="Petition">
-    <template v-if="!$store.state.ready">
-      <Loading :active="true" />
-    </template>
-    <template v-else-if="$store.state.status">
-      <Header />
-      <Sidebar />
-      <Dashboard />
-    </template>
-    <template v-else>
-      <div class="None">
-        ERROR: The ID No. ({{ $route.params.id }}) doesn't correspond to a
-        petition
-      </div>
-    </template>
-  </div>
+  <MediaQueryProvider :queries="{ mobile: '(max-width: 1080px)' }">
+    <div class="Petition">
+      <MatchMedia v-slot="{ mobile }">
+        <template v-if="!$store.state.ready">
+          <Loading :active="true" />
+        </template>
+
+        <template v-else-if="$store.state.status && mobile">
+          <Dashboard />
+          <Footer />
+        </template>
+        <template v-else-if="$store.state.status">
+          <Header />
+          <Sidebar />
+          <Dashboard />
+        </template>
+        <template v-else>
+          <div class="None">
+            ERROR: The ID No. ({{ $route.params.id }}) doesn't correspond to a
+            petition
+          </div>
+        </template>
+      </MatchMedia>
+    </div>
+  </MediaQueryProvider>
 </template>
 
 <script lang="ts">
@@ -26,6 +35,9 @@ import Dashboard from "../components/Dashboard.vue";
 import { Getter } from "vuex-class";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+import { MediaQueryProvider, MatchMedia } from "vue-component-media-queries";
+import Follow from "../components/Follow.vue";
+import Footer from "../components/Footer.vue";
 
 const seconds = 1000;
 @Component({
@@ -34,6 +46,10 @@ const seconds = 1000;
     Sidebar,
     Header,
     Dashboard,
+    MediaQueryProvider,
+    MatchMedia,
+    Follow,
+    Footer,
   },
 })
 export default class Petition extends Vue {

@@ -1,9 +1,25 @@
 <template>
   <div class="linechart" v-if="chartOptions.series">
-    <chart v-bind:options="chartOptions" />
-    <button class="left" @click="showHistory(false)" :disabled="showRealtime">
+    <div class="title desktop">
+      <h1>Signature Graph</h1>
+    </div>
+    <div class="title mobile" @click="() => (show = !show)">
+      <h1>Signature Graph</h1>
+    </div>
+    <chart v-bind:options="chartOptions" v-show="show" />
+    <button
+      class="left"
+      @click="showHistory(false)"
+      :disabled="showRealtime"
+      v-show="show"
+    >
       Real-time Data</button
-    ><button class="right" @click="showHistory(true)" :disabled="!showRealtime">
+    ><button
+      class="right"
+      @click="showHistory(true)"
+      :disabled="!showRealtime"
+      v-show="show"
+    >
       Historical Data
     </button>
   </div>
@@ -23,6 +39,7 @@ const seconds = 1000;
 export default class LineChart extends Vue {
   historicalSignatureData: [number, number][] = [];
   showRealtime = true;
+  show = true;
 
   @Getter("chartOptions")
   chartOptions!: any;
@@ -45,6 +62,7 @@ export default class LineChart extends Vue {
       color: "#080",
       data: [], // sample data.
       name: "Total Signatures",
+      type: "spline",
     });
 
     this.$store.state.keyPairs["historic:signature_count"] =
@@ -55,6 +73,7 @@ export default class LineChart extends Vue {
       color: "#080",
       data: this.historicalSignatureData, // sample data.
       name: "Total Signatures",
+      type: "spline",
     });
     this.update_function();
     this.$store.state.chartOptions.yAxis.softMin =
@@ -132,8 +151,8 @@ export default class LineChart extends Vue {
 .linechart {
   border-radius: 10px;
   border-width: 1px;
-  background: none;
   height: fit-content;
+  width: 66.2%;
 }
 
 button {
@@ -158,5 +177,11 @@ button {
 
 button.right {
   border-left-width: 1px;
+}
+
+@media (max-width: 1080px) {
+  .linechart {
+    width: 98%;
+  }
 }
 </style>
