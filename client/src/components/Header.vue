@@ -63,26 +63,18 @@ input:focus {
   height: 10%;
   width: 100%;
   z-index: 2;
-}
-
-@media (max-width: 1080px) {
-  .header {
-    bottom: 0px;
-    box-shadow: 0px -5px 3px 0px #ccc;
-  }
-}
-
-@media (max-width: infinity) {
-  .header {
-    top: 0px;
-    box-shadow: 0px 5px 3px 0px #ccc;
-    min-height: 10%;
-  }
+  top: 0px;
+  box-shadow: 0px 5px 3px 0px #ccc;
+  min-height: 10%;
 }
 
 .header h1 {
-  font-size: 2em;
+  font-size: 2.5em;
   background: none;
+}
+
+.header h2 {
+  cursor: default;
 }
 
 .data {

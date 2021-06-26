@@ -10,14 +10,14 @@
     <button
       class="left"
       @click="showHistory(false)"
-      :disabled="showRealtime"
+      :disabled="$store.state.showRealtime"
       v-show="show"
     >
       Real-time Data</button
     ><button
       class="right"
       @click="showHistory(true)"
-      :disabled="!showRealtime"
+      :disabled="!$store.state.showRealtime"
       v-show="show"
     >
       Historical Data
@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Chart, ChartOptions } from "highcharts-vue";
+import { Chart } from "highcharts-vue";
 import { Getter } from "vuex-class";
 
 const seconds = 1000;
@@ -38,20 +38,36 @@ const seconds = 1000;
 })
 export default class LineChart extends Vue {
   historicalSignatureData: [number, number][] = [];
-  showRealtime = true;
   show = true;
 
   @Getter("chartOptions")
-  chartOptions!: ChartOptions;
+  chartOptions!: any;
 
   async mounted(): Promise<void> {
-    console.log("mounted");
     if (this.$store.state.status) {
       await fetch(`/api/signatures/${this.$route.params.id}`)
         .then((response) => response.json())
         .then((timescaleResponse) => {
           timescaleResponse.forEach((element: [number, number]) => {
             this.historicalSignatureData.push([element[0], element[1]]);
+          });
+        });
+      await fetch(`/api/tweets/${this.$route.params.id}`)
+        .then((response) => response.json())
+        .then((tweets: [number, string][]) => {
+          this.chartOptions.xAxis.plotLines = [];
+          tweets.forEach((value) => {
+            this.chartOptions.xAxis.plotLines.push({
+              label: {
+                text: '"Petition Bot (UK)" tweet',
+                rotation: 0,
+                verticalAlign: "top",
+              },
+              color: "#1da1f2",
+              width: 2,
+              value: value[0],
+              dashStyle: "LongDash",
+            });
           });
         });
     }
@@ -63,6 +79,9 @@ export default class LineChart extends Vue {
       data: [], // sample data.
       name: "Total Signatures",
       type: "spline",
+      marker: {
+        enabled: false,
+      },
     });
 
     this.$store.state.keyPairs["historic:signature_count"] =
@@ -74,12 +93,11 @@ export default class LineChart extends Vue {
       data: this.historicalSignatureData, // sample data.
       name: "Total Signatures",
       type: "spline",
+      marker: {
+        enabled: false,
+      },
     });
     this.update_function();
-    this.$store.state.chartOptions.yAxis.softMin =
-      this.$store.state.petition.signature_count - 10;
-    this.$store.state.chartOptions.yAxis.softMax =
-      this.$store.state.chartOptions.yAxis.softMin + 40;
     setInterval(this.update_function, 5 * seconds);
   }
 
@@ -123,7 +141,7 @@ export default class LineChart extends Vue {
   }
 
   showHistory(show: boolean): void {
-    this.showRealtime = !show;
+    this.$store.state.showRealtime = !show;
     for (const key in this.$store.state.keyPairs) {
       this.$store.state.chartOptions.series[
         this.$store.state.keyPairs[key]

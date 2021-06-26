@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Tweet, Moment, Timeline } from "vue-tweet-embed";
+import { Tweet } from "vue-tweet-embed";
 
 @Component({
   components: {
