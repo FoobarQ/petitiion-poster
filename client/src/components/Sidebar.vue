@@ -3,30 +3,71 @@
     <div>
       <ticker />
       <div class="key">
-        <template v-for="region of Object.keys(constituencies)">
-          <div v-bind:key="region">
-            <div class="region" @click="toggle(region)">
-              <h1>{{ region }}</h1>
-            </div>
-            <template v-if="constituencies[region].show">
-              <div
-                v-for="constituency of constituencies[region].data"
-                v-bind:key="constituency.ons_code"
-                class="constituency"
-              >
-                <input
-                  type="checkbox"
-                  :id="constituency.ons_code"
-                  :name="constituency.ons_code"
-                  @click="
-                    addLine(constituency.name, 'signatures_by_constituency')
-                  "
-                />
-                <label :for="constituency.ons_code">{{
-                  constituency.name
-                }}</label>
-              </div>
-            </template>
+        <template>
+          <h4>Tracking Realtime Signatures</h4>
+          <div class="constituency">
+            <input type="checkbox" :name="total" checked disabled />
+            <label :for="total">All regions</label>
+          </div>
+          <div
+            v-for="(item, index) in trackingNames"
+            v-bind:key="index"
+            class="constituency"
+          >
+            <input
+              type="checkbox"
+              :name="item"
+              @click="toggleLine(item, trackingType[item])"
+              checked
+            />
+            <label :for="item">{{ item }}</label>
+          </div>
+        </template>
+        <h3>Add To Tracking</h3>
+        <input
+          type="text"
+          placeholder="Search.."
+          id="myInput"
+          v-model="filterCriteria"
+        />
+        <h4 v-show="filterCriteria">
+          Constituencies containing "{{ filterCriteria }}"
+        </h4>
+        <div
+          v-for="constituency of allConstituencies"
+          v-bind:key="constituency.ons_code"
+          class="constituency"
+          @click="toggleLine(constituency.name, 'signatures_by_constituency')"
+        >
+          <input
+            type="checkbox"
+            :id="constituency.ons_code"
+            :name="constituency.ons_code"
+          />
+          <label :for="constituency.ons_code">{{ constituency.name }}</label>
+        </div>
+        <template v-if="filterCriteria">
+          <h4>Regions containing "{{ filterCriteria }}"</h4>
+          <div
+            v-for="(item, index) in allRegions"
+            v-bind:key="index"
+            class="constituency"
+            @click="toggleLine(item, 'signatures_by_region')"
+          >
+            <input type="checkbox" :name="item" />
+            <label :for="item">{{ item }}</label>
+          </div>
+        </template>
+        <template v-if="filterCriteria">
+          <h4>Constituencies in Regions containing "{{ filterCriteria }}"</h4>
+          <div
+            v-for="constituency of constituenciesByRegion"
+            v-bind:key="constituency.name"
+            class="constituency"
+            @click="toggleLine(constituency.name, 'signatures_by_constituency')"
+          >
+            <input type="checkbox" :name="constituency.name" />
+            <label :for="constituency.name">{{ constituency.name }}</label>
           </div>
         </template>
       </div>
@@ -45,69 +86,74 @@
 import { Component, Vue } from "vue-property-decorator";
 import {
   Constituency,
-  London,
-  NW,
-  E,
-  Wales,
-  Scotland,
-  SE,
-  WestMidlands,
-  EastMidlands,
-  Yorkshire,
-  SW,
-  NI,
-  NE,
-} from "@/assets/constituencies";
-import Ticker from "@/components/Ticker.vue";
+  constituencies,
+  regions,
+} from "../assets/constituencies";
+import Ticker from "../components/Ticker.vue";
 
-interface Constituencies {
-  [Region: string]: {
-    data: Array<Constituency>;
-    show: boolean;
-  };
-}
 @Component({
   components: {
     Ticker,
   },
 })
 export default class Sidebar extends Vue {
-  constituencies: Constituencies = {
-    "East of England": { data: E, show: false },
-    "East Midlands": { data: EastMidlands, show: false },
-    London: { data: London, show: false },
-    "North East": { data: NE, show: false },
-    "Northern Ireland": { data: NI, show: false },
-    "North West": { data: NW, show: false },
-    Scotland: { data: Scotland, show: false },
-    "South East": { data: SE, show: false },
-    "South West": { data: SW, show: false },
-    Wales: { data: Wales, show: false },
-    "West Midlands": { data: WestMidlands, show: false },
-    "Yorkshire & the Humber": { data: Yorkshire, show: false },
-  };
+  filterCriteria = "";
+  trackingType: Record<string, string> = {};
+  trackingNames: Array<string> = [];
+  get allConstituencies(): Constituency[] {
+    const search = this.filterCriteria.toUpperCase();
+    return constituencies.filter(
+      (value) =>
+        value.name.toUpperCase().includes(search) &&
+        !this.trackingNames.includes(value.name)
+    );
+  }
 
-  addLine(name: string, type?: string): void {
-    if (this.$store.state.keyPairs[type + ":" + name] !== undefined) {
+  get constituenciesByRegion(): Constituency[] {
+    const search = this.filterCriteria.toUpperCase();
+    return constituencies.filter(
+      (value) =>
+        value.region.toUpperCase().includes(search) &&
+        !this.trackingNames.includes(value.name)
+    );
+  }
+
+  get allRegions(): string[] {
+    const search = this.filterCriteria.toUpperCase();
+    return regions.filter(
+      (value) =>
+        value.toUpperCase().includes(search) &&
+        !this.trackingNames.includes(value)
+    );
+  }
+
+  toggleLine(name: string, type: string): void {
+    if (this.$store.state.keyPairs[type + ":" + name]) {
+      console.log(name, type);
+      this.trackingNames.splice(this.trackingNames.indexOf(name));
+      delete this.trackingType[name];
+
+      console.log(this.$store.state.keyPairs[type + ":" + name]);
+      console.log(type, name);
+      this.$store.state.chartOptions.series.splice(
+        this.$store.state.keyPairs[type + ":" + name]
+      );
+      delete this.$store.state.keyPairs[type + ":" + name];
       return;
     }
-    if (type) {
-      this.$store.state.keyPairs[type + ":" + name] =
-        this.$store.state.chartOptions.series.length;
-      this.$store.state.chartOptions.series.push({
-        data: [],
-        type: "spline",
-        name,
-      });
-    }
-  }
 
-  toggle(id: string): void {
-    this.constituencies[id].show = !this.constituencies[id].show;
-  }
-
-  mounted(): void {
-    this.addLine("Total Signatures");
+    this.$store.state.keyPairs[type + ":" + name] =
+      this.$store.state.chartOptions.series.length;
+    this.$store.state.chartOptions.series.push({
+      data: [],
+      type: "spline",
+      marker: {
+        enabled: false,
+      },
+      name,
+    });
+    this.trackingNames.push(name);
+    this.trackingType[name] = type;
   }
 }
 </script>
@@ -126,16 +172,18 @@ export default class Sidebar extends Vue {
 .region:hover,
 .constituency:hover {
   background: rgb(240, 240, 240);
+  cursor: pointer;
 }
 
 .constituency {
   border-bottom-style: solid;
-  border-bottom-width: 1px;
+  border-bottom-width: 0px;
   text-align: left;
 }
 
 .sidebar > div {
   width: 11%;
+  min-width: 300px;
   float: left;
   top: 10%;
   height: 100%;
@@ -151,6 +199,12 @@ export default class Sidebar extends Vue {
   height: 75%;
   max-height: 75%;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: 2px;
+}
+
+.key::-webkit-scrollbar {
+  width: 2px;
 }
 
 .class {
@@ -160,5 +214,23 @@ export default class Sidebar extends Vue {
 
 .follow {
   font-size: 1.2em;
+  box-shadow: 0px -1px 3px 0px #ccc;
+}
+
+h4,
+h3 {
+  background: #080;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  padding-bottom: 0.33em;
+  padding-top: 0.33em;
+  box-shadow: 0px 1px 3px 0px #ccc;
+  color: white;
+  cursor: default;
+}
+
+input[type="text"] {
+  width: 95%;
+  margin-bottom: 4px;
 }
 </style>

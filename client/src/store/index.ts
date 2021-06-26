@@ -35,13 +35,37 @@ const defaultState = (): AppState => {
       },
       yAxis: {
         allowDecimals: false,
-        softMax: 30,
-        softMin: 0,
         gridLineColor: "white",
-        visible: false,
+        plotLines: [
+          {
+            label: {
+              text: "Response Threshold",
+            },
+            color: "lightgrey",
+            width: 2,
+            value: 10000,
+            dashStyle: "LongDash",
+          },
+          {
+            label: {
+              text: "Debate Threshold",
+            },
+            color: "lightgrey",
+            width: 2,
+            value: 100000,
+            dashStyle: "LongDash",
+          },
+        ],
+        title: {
+          text: "Signatures",
+        },
       },
       chart: {
         ignoreHiddenSeries: true,
+        colorCount: 50,
+        panning: {
+          enabled: true,
+        },
       },
       plotOptions: {
         line: {
@@ -72,7 +96,8 @@ export default new Vuex.Store({
     link: (state) =>
       `https://petition.parliament.uk/petitions/${state.petitionId}`,
     petitionId: (state) => state.petitionId,
-    action: (state) => (state.petition ? titleify(state.petition.action) : ""),
+    action: (state) =>
+      state.petition.action ? titleify(state.petition.action) : "",
     background: (state) => (state.petition ? state.petition.background : ""),
     creator_name: (state) =>
       state.petition ? state.petition.creator_name : "",
@@ -98,7 +123,7 @@ export default new Vuex.Store({
           context.commit("setPetition", petition);
           context.state.status = true;
         })
-        .catch((err) => {
+        .catch(() => {
           context.state.status = false;
         })
         .finally(() => {
@@ -110,7 +135,7 @@ export default new Vuex.Store({
 });
 
 export interface AppState {
-  petition: Attributes | any;
+  petition: Partial<Attributes>;
   petitionId: number;
   link?: string;
   status: boolean;

@@ -18,10 +18,10 @@
       <div class="options">
         <button
           class="left"
-          v-on:click="setPieChart('constituency')"
-          :disabled="pieChart === 'constituency'"
+          v-on:click="setPieChart('region')"
+          :disabled="pieChart === 'region'"
         >
-          Constituency
+          Region
         </button>
         <button
           class="mid"
@@ -32,10 +32,10 @@
         </button>
         <button
           class="right"
-          v-on:click="setPieChart('region')"
-          :disabled="pieChart === 'region'"
+          v-on:click="setPieChart('constituency')"
+          :disabled="pieChart === 'constituency'"
         >
-          Region
+          Constituency
         </button>
       </div>
     </div>
@@ -171,7 +171,9 @@ export default class PieChart extends Vue {
   ): { name: string; y: number }[] {
     let returnData = [{ name: "other", y: 0 }];
     data.forEach((value) => {
-      if (value.y > this.$store.state.petition.signature_count / 360) {
+      const amount =
+        this.$store.state.petition.signature_count > 50000 ? 650 : 720;
+      if (value.y > this.$store.state.petition.signature_count / amount) {
         returnData.push(value);
       } else {
         returnData[0].y += value.y;

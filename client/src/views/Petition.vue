@@ -61,7 +61,6 @@ export default class Petition extends Vue {
 
   async beforeMount(): Promise<void> {
     await this.setTick(this.$route.params.id);
-    console.log("beforeMount");
   }
 
   async handlePetitionResponse(): Promise<void> {
@@ -74,7 +73,7 @@ export default class Petition extends Vue {
         const whatever = await request(options);
         this.$store.commit("setPetition", JSON.parse(whatever).data.attributes);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     }
   }

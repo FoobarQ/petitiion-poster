@@ -57,7 +57,7 @@ app.get("/api/tweet/:id", async (req, res) => {
 app.get("/api/signatures/:id", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT time, signature_count FROM signatures WHERE id=$1",
+      "SELECT time, signature_count FROM signatures WHERE id=$1 ORDER BY time",
       [req.params.id]
     );
 
@@ -66,7 +66,6 @@ app.get("/api/signatures/:id", async (req, res) => {
       for (const row of result.rows) {
         response.push([new Date(row.time).getTime(), row.signature_count]);
       }
-      response.sort((a, b) => a[0] - b[0]);
       res.json(response);
     }
   } catch (err) {
@@ -77,7 +76,7 @@ app.get("/api/signatures/:id", async (req, res) => {
 app.get("/api/tweets/:id", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT time, tweetid FROM tweets WHERE id=$1",
+      "SELECT time, tweetid FROM tweets WHERE id=$1 ORDER BY time",
       [req.params.id]
     );
 
@@ -86,7 +85,6 @@ app.get("/api/tweets/:id", async (req, res) => {
       for (const row of result.rows) {
         response.push([new Date(row.time).getTime(), row.tweetid]);
       }
-      response.sort((a, b) => a[0] - b[0]);
       res.json(response);
     }
   } catch (err) {

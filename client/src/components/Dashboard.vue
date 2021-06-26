@@ -2,7 +2,6 @@
   <MatchMedia v-slot="{ mobile }">
     <div class="dash flex-container">
       <template v-if="mobile">
-        <happiness-form v-if="$store.state.petition.closed_at" />
         <description />
         <line-chart />
         <pie-chart />
@@ -54,7 +53,7 @@ export default class Dashboard extends Vue {
 .dash {
   position: fixed;
   top: 10%;
-  left: 11.3%;
+  left: 310px;
   overflow-y: auto;
   overflow-x: auto;
   right: 0px;

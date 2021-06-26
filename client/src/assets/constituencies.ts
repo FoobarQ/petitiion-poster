@@ -6557,3 +6557,18 @@ export {
   NI,
   NE,
 };
+
+export const regions = [
+  London[0].region,
+  NW[0].region,
+  E[0].region,
+  Wales[0].region,
+  Scotland[0].region,
+  SE[0].region,
+  WestMidlands[0].region,
+  EastMidlands[0].region,
+  Yorkshire[0].region,
+  SW[0].region,
+  NI[0].region,
+  NE[0].region,
+];
