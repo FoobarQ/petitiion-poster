@@ -10,14 +10,14 @@
     <button
       class="left"
       @click="showHistory(false)"
-      :disabled="showRealtime"
+      :disabled="$store.state.showRealtime"
       v-show="show"
     >
       Real-time Data</button
     ><button
       class="right"
       @click="showHistory(true)"
-      :disabled="!showRealtime"
+      :disabled="!$store.state.showRealtime"
       v-show="show"
     >
       Historical Data
@@ -38,7 +38,6 @@ const seconds = 1000;
 })
 export default class LineChart extends Vue {
   historicalSignatureData: [number, number][] = [];
-  showRealtime = true;
   show = true;
 
   @Getter("chartOptions")
@@ -142,7 +141,7 @@ export default class LineChart extends Vue {
   }
 
   showHistory(show: boolean): void {
-    this.showRealtime = !show;
+    this.$store.state.showRealtime = !show;
     for (const key in this.$store.state.keyPairs) {
       this.$store.state.chartOptions.series[
         this.$store.state.keyPairs[key]

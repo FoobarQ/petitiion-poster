@@ -17,6 +17,7 @@ const defaultState = (): AppState => {
     status: false,
     ready: false,
     keyPairs: {},
+    showRealtime: true,
     chartOptions: {
       series: [
         {
@@ -112,6 +113,7 @@ export default new Vuex.Store({
     signature_count: (state) =>
       state.petition ? state.petition.signature_count : 0,
     chartOptions: (state) => state.chartOptions,
+    showRealtime: (state) => state.showRealtime,
   },
   actions: {
     setPetitionId: (context, petitionId) => {
@@ -135,6 +137,7 @@ export default new Vuex.Store({
 });
 
 export interface AppState {
+  showRealtime: boolean;
   petition: Partial<Attributes>;
   petitionId: number;
   link?: string;

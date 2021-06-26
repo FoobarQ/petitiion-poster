@@ -150,6 +150,8 @@ export default class Sidebar extends Vue {
       marker: {
         enabled: false,
       },
+      visible: this.$store.getters.showRealtime,
+      showInLegend: this.$store.getters.showRealtime,
       name,
     });
     this.trackingNames.push(name);
