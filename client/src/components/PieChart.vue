@@ -78,7 +78,7 @@ export default class PieChart extends Vue {
   chartOptions = {
     series: [
       {
-        name: "signatures by region",
+        name: "",
         type: "pie",
         data: [{}], // sample data.
       },
@@ -112,6 +112,7 @@ export default class PieChart extends Vue {
         };
       }
     );
+    this.chartOptions.series[0].name = "Signatures by Region";
     this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
@@ -124,6 +125,7 @@ export default class PieChart extends Vue {
         };
       }
     );
+    this.chartOptions.series[0].name = "Signatures by Country";
     this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
@@ -136,10 +138,12 @@ export default class PieChart extends Vue {
         };
       }
     );
+    this.chartOptions.series[0].name = "Signatures by Constituency";
     this.chartOptions.series[0].data = this.filterPieData(x);
   }
 
   mounted(): void {
+    this.updatePieChart();
     setInterval(this.updatePieChart, 15 * seconds);
   }
 
@@ -179,7 +183,6 @@ export default class PieChart extends Vue {
         returnData[0].y += value.y;
       }
     });
-    console.log(returnData);
     return returnData;
   }
 }
@@ -192,6 +195,7 @@ export default class PieChart extends Vue {
 
 .piechart {
   width: 30%;
+  height: fit-content;
 }
 
 button {
@@ -249,6 +253,12 @@ button[disabled] {
 @media (max-width: 1080px) {
   .piechart {
     width: 98%;
+  }
+}
+
+@media (max-width: 2559px) {
+  .piechart {
+    width: 34.5%;
   }
 }
 </style>
