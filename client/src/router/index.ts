@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Petition from "../views/Petition.vue";
-
+import Home from "../views/Home.vue";
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
@@ -14,13 +14,15 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: "/about",
-    name: "About",
+    path: "/",
+    name: "Home",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    component: Home,
+    meta: {
+      title: "Home",
+    },
   },
   { path: "/p/:id", redirect: { name: "Petition" } },
 ];
@@ -47,7 +49,7 @@ router.beforeEach((to, from, next) => {
       to.params.id || ""
     } - Petition Tracker`;
   } else {
-    document.title = "Petition Tracker";
+    document.title = `${nearestWithTitle?.meta.title} - Petition Tracker`;
   }
 
   next();

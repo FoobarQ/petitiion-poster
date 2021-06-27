@@ -8,7 +8,6 @@
         <twitter v-if="tweetId" :tweetId="tweetId" />
       </template>
       <template v-else>
-        <happiness-form v-if="$store.state.petition.closed_at" />
         <description />
         <line-chart />
         <pie-chart />

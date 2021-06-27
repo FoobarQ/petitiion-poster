@@ -202,11 +202,11 @@ export default class Sidebar extends Vue {
   max-height: 75%;
   overflow-y: auto;
   -ms-overflow-style: none;
-  scrollbar-width: 2px;
+  scrollbar-width: none;
 }
 
-.key::-webkit-scrollbar {
-  width: 2px;
+::-webkit-scrollbar {
+  display: none;
 }
 
 .class {
