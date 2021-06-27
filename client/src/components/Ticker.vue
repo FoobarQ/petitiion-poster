@@ -20,6 +20,9 @@ export default class Ticker extends Vue {}
   width: 100%;
   color: #080;
   cursor: default;
+  border-bottom-color: lightgrey;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
 }
 
 h1 {
@@ -29,5 +32,6 @@ h1 {
 
 h2 {
   margin-top: 4px;
+  color: black;
 }
 </style>

@@ -39,4 +39,10 @@ p {
     padding: 4px;
   }
 }
+
+@media (max-width: 2520px) {
+  .description {
+    width: 97%;
+  }
+}
 </style>

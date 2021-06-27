@@ -196,6 +196,18 @@ button.right {
   border-left-width: 1px;
 }
 
+@media (max-width: 2559px) {
+  .linechart {
+    width: 60%;
+  }
+}
+
+@media (max-width: 1836px) {
+  .linechart {
+    width: 96%;
+  }
+}
+
 @media (max-width: 1080px) {
   .linechart {
     width: 98%;
