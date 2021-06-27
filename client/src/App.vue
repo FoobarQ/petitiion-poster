@@ -30,18 +30,6 @@ a {
   color: #080;
 }
 
-h1 + div {
-  position: relative;
-  background: #080;
-  color: white;
-  bottom: 0px;
-  margin: 0;
-
-  h2 {
-    margin: 0;
-  }
-}
-
 .data {
   position: absolute;
   bottom: 0px;
