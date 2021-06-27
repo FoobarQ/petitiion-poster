@@ -42,6 +42,7 @@ const app = express();
 const port = process.env.PORT || 3080;
 
 app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.json());
 
 app.get("/api/tweet/:id", async (req, res) => {
   const entity = await conn.manager.findOne(Petition, {
@@ -92,17 +93,39 @@ app.get("/api/tweets/:id", async (req, res) => {
   }
 });
 
-app.get("/api/actions", async (req, res) => {
+app.post("/api/actions", async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, action FROM actions");
+    const response = [];
 
-    if (result.rows) {
-      const response = [];
+    if (req.body.orderBy !== "signature_count") {
+      const query = `SELECT id, action FROM actions ORDER BY ${
+        req.body.orderBy === "action" ? "action" : "id"
+      } ${req.body.order === "ASC" ? "ASC" : "DESC"} LIMIT $1 OFFSET $2`;
+      const result = await pool.query(query, [req.body.limit, req.body.offset]);
+
       for (const row of result.rows) {
-        response.push([row.id, row.action]);
+        response.push({ id: row.id, action: row.action });
       }
-      res.json(response);
+    } else {
+      let query = `SELECT DISTINCT id FROM (SELECT id, signature_count FROM signatures ORDER BY signature_count ${
+        req.body.order === "ASC" ? "ASC" : "DESC"
+      }) AS nested LIMIT $1 OFFSET $2`;
+      const result = await pool.query(query, [req.body.limit, req.body.offset]);
+      query = "SELECT id, action FROM actions WHERE id IN (";
+      const orderedMapping = [];
+      for (const row of result.rows) {
+        response.push({ id: row.id, action: "" });
+        query += `$${response.length}, `;
+        orderedMapping.push(row.id);
+      }
+      query = `${query.slice(0, query.length - 2)});`;
+      const result2 = await pool.query(query, orderedMapping);
+
+      for (const row of result2.rows) {
+        response[orderedMapping.indexOf(row.id)].action = row.action;
+      }
     }
+    res.json(response);
   } catch (err) {
     console.log(err);
   }

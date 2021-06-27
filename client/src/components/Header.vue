@@ -9,7 +9,7 @@
           v-on:keyup.enter="submit"
         />
         <a class="button" :href="link">Go To Petition</a>
-        <a class="button" href="/home">Find Other Petitions</a>
+        <a class="button" href="/">Find Other Petitions</a>
       </h1>
       <div class="bumper">
         <h2>by {{ $store.state.petition.creator_name || "Anonymous" }}</h2>
