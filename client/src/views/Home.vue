@@ -24,7 +24,7 @@
         >@UKPetitionPosts</a
       >. The twitter bot's purpose is to show people more of what's going on in
       government - the stuff that isn't usually covered in the daily news
-      breifings, whereas the purpose of this site is to show just how effective -
+      briefings, whereas the purpose of this site is to show just how effective -
       or ineffective the petition process is with bringing about real change.
       The website is still being fleshed out but for now: please click around to
       see what you can see, and follow @UKPetitionPosts on twitter to send
