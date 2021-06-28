@@ -6,25 +6,6 @@ import pg from "pg";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import typeorm from "typeorm";
-import Petition from "./entity/Petition.js";
-
-let conn: typeorm.Connection;
-
-async function setupConnection(): Promise<void> {
-  conn = await typeorm.createConnection({
-    type: "postgres",
-    url: process.env.DATABASE_URL,
-    ssl: true,
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
-    entities: [Petition],
-  });
-  console.log("Database online");
-}
 
 const pool = new pg.Pool({
   user: process.env.TIMESCALE_USER || "user",
@@ -37,7 +18,6 @@ const pool = new pg.Pool({
   },
 });
 
-setupConnection();
 const app = express();
 const port = process.env.PORT || 3080;
 
@@ -45,13 +25,15 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
 
 app.get("/api/tweet/:id", async (req, res) => {
-  const entity = await conn.manager.findOne(Petition, {
-    where: {
-      id: `${req.params.id}`,
-    },
-  });
-  if (entity) {
-    res.json(entity.tweetId);
+  try {
+    const result = await pool.query("SELECT * FROM petition WHERE id=$1", [
+      req.params.id,
+    ]);
+    if (result.rows[0]) {
+      res.json(result.rows[0].tweetId);
+    }
+  } catch (err) {
+    console.error(err);
   }
 });
 
@@ -62,13 +44,11 @@ app.get("/api/signatures/:id", async (req, res) => {
       [req.params.id]
     );
 
-    if (result.rows) {
-      const response = [];
-      for (const row of result.rows) {
-        response.push([new Date(row.time).getTime(), row.signature_count]);
-      }
-      res.json(response);
+    const response = [];
+    for (const row of result.rows) {
+      response.push([new Date(row.time).getTime(), row.signature_count]);
     }
+    res.json(response);
   } catch (err) {
     console.log(err);
   }

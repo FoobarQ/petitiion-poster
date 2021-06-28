@@ -1,10 +1,8 @@
 import "reflect-metadata";
-import typeorm from "typeorm";
-import Petition from "./entity/Petition.js";
 import fetch from "node-fetch";
 import request from "request-promise";
 import pg from "pg";
-import { shorten } from "./utils.js";
+import { shorten } from "./utils";
 
 const client = new pg.Pool({
   user: process.env.TIMESCALE_USER || "user",
@@ -35,111 +33,83 @@ const options = {
   },
 };
 
-typeorm
-  .createConnection({
-    type: "postgres",
-    url: process.env.DATABASE_URL,
-    ssl: true,
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
-    entities: [Petition],
-    synchronize: true, // I don't like it, but it's needed to keep secrets secret
-  })
-  .then(async (connection) => {
-    let updatesMade = 0;
-    try {
-      console.log("Finding petitions to update");
-      const petitions = await connection.manager.find(Petition, {
-        where: [
-          {
-            response: false,
-          },
-          {
-            debate: false,
-          },
-        ],
-      });
+async function updatePetition() {
+  let updatesMade = 0;
+  try {
+    console.log("Finding petitions to update");
+    const petitions = await client.query(
+      "SELECT * FROM petition WHERE response = FALSE OR debate = FALSE"
+    );
 
-      for (const petition of petitions) {
-        await fetch(
-          `https://petition.parliament.uk/petitions/${petition.id}.json`
+    for (const petition of petitions.rows) {
+      await fetch(
+        `https://petition.parliament.uk/petitions/${petition.id}.json`
+      )
+        .then((response) => response.json())
+        .then((data) => data.data.attributes)
+        .then(
+          (attributes) =>
+            new Promise<string[]>((resolve, reject) => {
+              const { government_response, debate } = attributes;
+
+              const tweets = [];
+
+              if (!petition.response && government_response) {
+                const tweetstart = `Govt. response from ${government_response.responded_on}:\n\n`;
+                const tweetEnd = `Click the link above for more info.`;
+                const tweetBody = `"${
+                  tweetstart +
+                  shorten(
+                    government_response.summary,
+                    280 - (tweetstart.length + tweetEnd.length + 4)
+                  )
+                }"\n\n${tweetEnd}`;
+                tweets.push(tweetBody);
+                petition.response = true;
+              }
+
+              if (!petition.debate && debate) {
+                let tweetBody = `Debated on ${debate.debated_on}\n\n`;
+                tweetBody += `Watch here: ${debate.video_url}\n`;
+                tweets.push(tweetBody);
+                petition.debate = true;
+              }
+
+              if (tweets.length > 0) {
+                console.log(tweets);
+                return resolve(tweets);
+              } else {
+                return reject(`it has no updates`);
+              }
+            })
         )
-          .then((response) => response.json())
-          .then((data) => data.data.attributes)
-          .then(
-            (attributes) =>
-              new Promise<string[]>((resolve, reject) => {
-                const { government_response, debate, signature_count } =
-                  attributes;
-
-                petition.signature_count = signature_count;
-
-                const tweets = [];
-
-                if (!petition.response && government_response) {
-                  const tweetstart = `Govt. response from ${government_response.responded_on}:\n\n`;
-                  const tweetEnd = `Click the link above for more info.`;
-                  const tweetBody = `"${
-                    tweetstart +
-                    shorten(
-                      government_response.summary,
-                      280 - (tweetstart.length + tweetEnd.length + 4)
-                    )
-                  }"\n\n${tweetEnd}`;
-                  tweets.push(tweetBody);
-                  petition.response = true;
-                }
-
-                if (!petition.debate && debate) {
-                  let tweetBody = `Debated on ${debate.debated_on}\n\n`;
-                  tweetBody += `Watch here: ${debate.video_url}\n`;
-                  tweets.push(tweetBody);
-                  petition.debate = true;
-                }
-
-                if (tweets.length > 0) {
-                  console.log(tweets);
-                  return resolve(tweets);
-                } else {
-                  return reject(`it has no updates`);
-                }
-              })
-          )
-          .then((tweets) => updateTweet(petition.tweetId, tweets, petition.id))
-          .then((tweetId) => {
-            petition.tweetId = tweetId;
-            connection.manager.update(
-              Petition,
-              {
-                id: petition.id,
-              },
-              petition
-            );
-          })
-          .then(() => {
-            console.log(`Petition ${petition.id} updated.`);
-            updatesMade++;
-          })
-          .catch((error) => {
-            console.error(
-              `Update failed for Petition (${petition.id}) because ${error}`
-            );
-          });
-        if (updatesMade >= UPDATE_LIMIT) {
-          console.log("Process finished successfully");
-          return 0;
-        }
+        .then((tweets) => updateTweet(petition.tweetId, tweets, petition.id))
+        .then((tweetId) => {
+          petition.tweetId = tweetId;
+          return client.query(
+            "UPDATE petition SET tweetId = $1, response = $2, debate = $3 WHERE id = $4",
+            [petition.tweetId, petition.response, petition.debate, petition.id]
+          );
+        })
+        .then(() => {
+          console.log(`Petition ${petition.id} updated.`);
+          updatesMade++;
+        })
+        .catch((error) => {
+          console.error(
+            `Update failed for Petition (${petition.id}) because ${error}`
+          );
+        });
+      if (updatesMade >= UPDATE_LIMIT) {
+        console.log("Process finished successfully");
       }
-      console.log("\nPetitions updated.");
-      console.log("Process finished successfully");
-    } catch (notFoundError) {
-      console.log("Nothing to update.");
     }
-  })
-  .catch((error) => console.log(error));
+    console.log("\nPetitions updated.");
+    console.log("Process finished successfully");
+  } catch (notFoundError) {
+    console.log("Nothing to update.");
+  }
+}
 
 async function updateTweet(
   tweetId: string,
@@ -167,3 +137,5 @@ async function updateTweet(
 
   return tweetConfirmation;
 }
+
+updatePetition();
