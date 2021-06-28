@@ -81,7 +81,7 @@ async function createPetition(): Promise<number | void> {
           petitionEntry.id = String(petition.id);
           petitionEntry.signature_count = petition.attributes.signature_count;
 
-          await client.query(
+          client.query(
             "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
             [tweetTimestamp, petition.id, tweetId]
           );
@@ -101,6 +101,7 @@ async function createPetition(): Promise<number | void> {
         });
       if (tweetsMade >= TWEET_LIMIT) {
         console.log("Process finished successfully.");
+        return 0;
       }
     }
     page++;
