@@ -102,6 +102,7 @@ async function updatePetition() {
         });
       if (updatesMade >= UPDATE_LIMIT) {
         console.log("Process finished successfully");
+        return 0;
       }
     }
     console.log("\nPetitions updated.");
