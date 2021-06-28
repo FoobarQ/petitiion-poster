@@ -1,6 +1,4 @@
 import "reflect-metadata";
-import typeorm from "typeorm";
-import Petition from "./entity/Petition";
 import request from "request-promise";
 import { getPetitions, shorten } from "./utils";
 import pg from "pg";
@@ -33,93 +31,82 @@ const options = {
 const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
   : 2;
-typeorm
-  .createConnection({
-    type: "postgres",
-    url: process.env.DATABASE_URL,
-    ssl: true,
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
-    entities: [Petition],
-    synchronize: true, // I don't like it, but it's needed to keep secrets secret
-  })
-  .then(async (connection) => {
-    let tweetsMade = 0;
-    let page = 1;
 
-    while (tweetsMade < TWEET_LIMIT) {
-      console.log("Retrieving petitions...");
+async function createPetition(): Promise<number | void> {
+  let tweetsMade = 0;
+  let page = 1;
 
-      let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
-      if (!petitions) {
-        console.log("page limit reached.");
-        return;
-      }
+  while (tweetsMade < TWEET_LIMIT) {
+    console.log("Retrieving petitions...");
 
-      console.log("  Success.");
-      console.log("Processing petitions...");
-
-      for (const petition of petitions) {
-        let entity;
-        try {
-          entity = await connection.manager.findOne(Petition, {
-            where: {
-              id: `${petition.id}`,
-            },
-          });
-        } catch (notFoundError) {
-          console.log("NEW PETITION: " + petition.attributes.action);
-        }
-
-        if (entity === undefined) {
-          console.log("Making tweet...");
-          await composeTweet(petition)
-            .then((tweet) => postTweet(tweet))
-            .then(async (tweetConfirmation) => {
-              const tweetId = tweetConfirmation.id_str;
-              const tweetTimestamp = tweetConfirmation.created_at;
-              console.log("  Success.");
-              console.log("Updating database...");
-              const petitionEntry = new Petition();
-              petitionEntry.deadline = new Date(petition.attributes.opened_at);
-              let month = petitionEntry.deadline.getMonth() + 6;
-              let year =
-                month > 11
-                  ? petitionEntry.deadline.getFullYear() + 1
-                  : petitionEntry.deadline.getFullYear();
-              month = month % 12;
-              petitionEntry.deadline.setMonth(month);
-              petitionEntry.deadline.setFullYear(year);
-              petitionEntry.tweetId = String(tweetId);
-              petitionEntry.id = String(petition.id);
-              petitionEntry.signature_count =
-                petition.attributes.signature_count;
-
-              await client.query(
-                "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
-                [tweetTimestamp, petition.id, tweetId]
-              );
-              return connection.manager.save(petitionEntry);
-            })
-            .then((pet) => {
-              console.log("  Success.");
-              console.log(`Saved a new petition with id: ${pet.id}\n\n`);
-              tweetsMade++;
-            });
-          if (tweetsMade >= TWEET_LIMIT) {
-            console.log("Process finished successfully.");
-            return 0;
-          }
-        }
-      }
-      page++;
+    let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
+    if (!petitions) {
+      console.log("page limit reached.");
+      return;
     }
-    console.log("No new petitions to post.");
-  })
-  .catch((error) => console.log(error));
+
+    for (const petition of petitions) {
+      const entity = await client.query(
+        "SELECT * FROM petition WHERE id = $1",
+        [petition.id]
+      );
+      if (entity.rows[0]) {
+        console.log(entity.rows[0].id);
+        continue;
+      }
+
+      console.log("NEW PETITION: " + petition.attributes.action);
+      console.log("Making tweet...");
+
+      await composeTweet(petition)
+        .then((tweet) => postTweet(tweet))
+        .then(async (tweetConfirmation) => {
+          const tweetId = tweetConfirmation.id_str;
+          const tweetTimestamp = tweetConfirmation.created_at;
+
+          console.log("  Success.");
+          console.log("Updating database...");
+
+          const petitionEntry: any = {};
+          petitionEntry.deadline = new Date(petition.attributes.opened_at);
+          let month = petitionEntry.deadline.getMonth() + 6;
+          let year =
+            month > 11
+              ? petitionEntry.deadline.getFullYear() + 1
+              : petitionEntry.deadline.getFullYear();
+          month = month % 12;
+          petitionEntry.deadline.setMonth(month);
+          petitionEntry.deadline.setFullYear(year);
+          petitionEntry.tweetId = String(tweetId);
+          petitionEntry.id = String(petition.id);
+          petitionEntry.signature_count = petition.attributes.signature_count;
+
+          await client.query(
+            "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
+            [tweetTimestamp, petition.id, tweetId]
+          );
+          client.query(
+            "INSERT INTO petition VALUES ($1, $2, $3, $4, False, False)",
+            [
+              petitionEntry.id,
+              petitionEntry.deadline,
+              petitionEntry.tweetId,
+              petitionEntry.signature_count,
+            ]
+          );
+        })
+        .then(() => {
+          console.log("  Success.");
+          tweetsMade++;
+        });
+      if (tweetsMade >= TWEET_LIMIT) {
+        console.log("Process finished successfully.");
+      }
+    }
+    page++;
+  }
+  console.log("No new petitions to post.");
+}
 
 async function composeTweet(petition: PetitionInterface) {
   const { links } = petition;
@@ -184,3 +171,5 @@ function hashtagify(input: string) {
   x = x.map((value) => value.slice(0, 1).toUpperCase() + value.slice(1));
   return `#${x.join("")} `;
 }
+
+createPetition();
