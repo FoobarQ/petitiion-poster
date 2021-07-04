@@ -1,0 +1,127 @@
+import { describe } from 'mocha';
+import { expect } from 'chai';
+import { Trie, TrieNode } from '../model/Trie';
+
+
+function getRandString(length: number = 16) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let rand = '';
+    for (let i = 0; i < length; i++) {
+        rand += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return rand;
+}
+
+describe('Testing Initialisation', () => {
+    describe('Initialise with integer', () => {
+        it('Should initialise a Trie with an integer', () => {
+            const testVal = 1;
+            const trie = new Trie(new TrieNode(testVal));
+            expect(trie.root.val).to.equal(testVal);
+        })
+    });
+    describe('Initialise with integer', () => {
+        it('Should initialise a Trie with an string', () => {
+            const testVal = "saifubasb";
+            const trie = new Trie(new TrieNode(testVal));
+            expect(trie.root.val).to.equal(testVal);
+        })
+
+    });
+})
+
+
+describe('Testing Trie methods', () => {
+    describe('Insert()', () => {
+        it('Should insert a key into an empty Trie', () => {
+            const trie = new Trie(new TrieNode());
+            const randomString = getRandString();
+            trie.insert(randomString, randomString);
+            expect(trie.root.children).to.contain.any.keys(randomString.charAt(0));
+        })
+        it('Should insert a 2 keys into a Trie', () => {
+            const trie = new Trie(new TrieNode());
+            trie.insert("taps", "taps");
+            trie.insert("young", "taps");
+            expect(trie.root.children).to.contain.all.keys("t", "y");
+        })
+    });
+    describe('Search()', () => {
+        it('Should find a string in the trie', () => {
+            const trie = new Trie(new TrieNode());
+            const searchString = "taps";
+            const val = "asjsd";
+            trie.insert(searchString, val);
+            expect(trie.search(searchString)).to.equal(val);
+        })
+        it('Should a find string in the trie', () => {
+            const trie = new Trie(new TrieNode());
+            const insertString = "taps";
+            trie.insert(insertString, insertString);
+
+            const searchString = "tapz";
+            expect(trie.search(searchString)).to.equal(null);
+        })
+        it('Should not find a string in the trie', () => {
+            const trie = new Trie(new TrieNode());
+            const searchString = "taps";
+            const searchString1 = "tapsbvgv";
+            trie.insert(searchString, searchString);
+            trie.insert(searchString1, searchString1);
+            expect(trie.search(searchString)).to.not.equal(null);
+        })
+        it('Should not find a string in the trie', () => {
+            const trie = new Trie(new TrieNode());
+            const searchString = "taps";
+            expect(trie.search(searchString)).to.equal(null);
+        })
+
+    });
+    describe('Delete()', () => {
+        it('Should insert a value, then delete it', () => {
+            const trie = new Trie(new TrieNode());
+            const randomString = getRandString();
+            trie.insert(randomString, randomString);
+            expect(trie.search(randomString)).to.equal(randomString);
+            expect(trie.delete(randomString)).to.equal(true);
+            expect(trie.search(randomString)).to.equal(null);
+        })
+        it('Should insert a value, then delete it', () => {
+            const trie = new Trie(new TrieNode());
+            const randomString = getRandString();
+            trie.insert(randomString, randomString);
+            expect(trie.search(randomString)).to.equal(randomString);
+            expect(trie.delete(randomString)).to.equal(true);
+            expect(trie.search(randomString)).to.equal(null);
+        })
+
+    });
+    describe('suggestKey()', () => {
+        it('Should return an empty array', () => {
+            const trie = new Trie(new TrieNode());
+            const randomString = getRandString();
+            const results = trie.suggestKey(randomString, 0);
+            expect(results.length).to.equal(0);
+        })
+        it('Should return a non-empty array with at least one character', () => {
+            const trie = new Trie(new TrieNode());
+            const randomStrings = new Array(100)
+            let firstCharCount = {};
+            for (let i = 0; i < randomStrings.length; ++i) {
+                randomStrings[i] = getRandString();
+                const firstChar = randomStrings[i].charAt(0)
+                if (!(firstChar in firstCharCount)) {
+                    firstCharCount[firstChar] = 0;
+                }
+                firstCharCount[firstChar] += 1;
+            }
+            randomStrings.forEach(str => {
+                trie.insert(str, str);
+            });
+            const firstChar = randomStrings[0].charAt(0)
+            const results = trie.suggestKey(firstChar);
+            expect(results.length).to.equal(firstCharCount[firstChar]);
+        })
+
+    });
+})
