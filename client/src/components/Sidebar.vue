@@ -6,8 +6,8 @@
         <template>
           <h4>Tracking Realtime Signatures</h4>
           <div class="constituency">
-            <input type="checkbox" :name="total" checked disabled />
-            <label :for="total">All regions</label>
+            <input type="checkbox" name="total" checked disabled />
+            <label for="total">All regions</label>
           </div>
           <div
             v-for="(item, index) in trackingNames"
@@ -139,7 +139,6 @@ export default class Sidebar extends Vue {
         this.$store.state.keyPairs[type + ":" + name]
       );
       delete this.$store.state.keyPairs[type + ":" + name];
-      return;
     }
 
     this.$store.state.keyPairs[type + ":" + name] =

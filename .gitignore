@@ -3,6 +3,7 @@
 */dist
 server/public
 */build
+*.js
 
 # local env files
 .env.local
@@ -25,3 +26,7 @@ pnpm-debug.log*
 
 #my file I use to test code
 test.ts
+
+#sonarqube
+.scannerwork
+sonar-project.properties

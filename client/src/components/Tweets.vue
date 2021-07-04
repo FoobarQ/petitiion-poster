@@ -11,7 +11,7 @@ import { Tweet } from "vue-tweet-embed";
     Tweet,
   },
 })
-export default class Twitter extends Vue {
+export default class Tweets extends Vue {
   @Prop({}) tweetId!: string;
 }
 </script>
