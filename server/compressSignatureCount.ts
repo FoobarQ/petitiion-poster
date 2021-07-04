@@ -11,29 +11,40 @@ const client = new pg.Pool({
   },
 });
 
-async function actuallyCompress(id: string) {
-  const petitionSignatures = await client.query(
-    "SELECT * FROM signatures WHERE id=$1 ORDER BY time",
-    [id]
-  );
-  for (
-    let rowIndex = 1;
-    rowIndex < petitionSignatures.rowCount - 1;
-    rowIndex++
-  ) {
+function deleteRedundantData(result: pg.QueryResult<any>, column: string) {
+  if (result.rowCount < 3) {
+    return null;
+  }
+
+  for (let rowIndex = 1; rowIndex < result.rowCount - 1; rowIndex++) {
     if (
-      petitionSignatures.rows[rowIndex - 1].signature_count ===
-        petitionSignatures.rows[rowIndex].signature_count &&
-      petitionSignatures.rows[rowIndex].signature_count ===
-        petitionSignatures.rows[rowIndex + 1].signature_count
+      result.rows[rowIndex - 1][column] === result.rows[rowIndex][column] &&
+      result.rows[rowIndex][column] === result.rows[rowIndex + 1][column]
     ) {
       //deletes all middle elements in a series of repeating signature_counts
       client.query("DELETE FROM signatures WHERE id=$1 AND time=$2", [
-        petitionSignatures.rows[rowIndex - 1].id,
-        petitionSignatures.rows[rowIndex - 1].time,
+        result.rows[rowIndex - 1].id,
+        result.rows[rowIndex - 1].time,
       ]);
     }
   }
+  return result.rows[0][column];
+}
+
+async function actuallyCompress(id: string) {
+  let result = await client.query(
+    "SELECT * FROM signatures WHERE id=$1 AND time > NOW() - INTERVAL '26 hours' ORDER BY time",
+    [id]
+  );
+
+  const oldest = deleteRedundantData(result, "signature_count");
+  //TODO: remove this secondary clean up code.
+  //      It wouldn't be necessary after the first run.
+  result = await client.query(
+    "SELECT * FROM signatures WHERE id=$1 AND signature_count=$2 ORDER BY time",
+    [id, oldest]
+  );
+  deleteRedundantData(result, "signature_count");
 }
 
 async function compressSignatures() {

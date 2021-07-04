@@ -87,7 +87,7 @@ async function updatePetition() {
         .then((tweetId) => {
           petition.tweetId = tweetId;
           return client.query(
-            "UPDATE petition SET tweetId = $1, response = $2, debate = $3 WHERE id = $4",
+            'UPDATE petition SET "tweetId" = $1, response = $2, debate = $3 WHERE id = $4',
             [petition.tweetId, petition.response, petition.debate, petition.id]
           );
         })
