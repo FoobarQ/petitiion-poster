@@ -55,9 +55,10 @@ const seconds = 1000;
 export default class Petition extends Vue {
   @Getter("link")
   link!: string;
-  tick: ReturnType<typeof setTimeout> = setInterval(() => {
-    console.log("waiting"), 20 * seconds;
-  });
+  tick: ReturnType<typeof setTimeout> = setInterval(
+    this.handlePetitionResponse,
+    5 * seconds
+  );
 
   async beforeMount(): Promise<void> {
     await this.setTick(this.$route.params.id);
@@ -89,5 +90,3 @@ export default class Petition extends Vue {
   }
 }
 </script>
-
-<style lang="scss"></style>

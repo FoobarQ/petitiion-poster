@@ -6,7 +6,7 @@ function toDate(input: string | null) {
   return input ? new Date(input) : null;
 }
 
-async function fixResponse(data: any): Promise<{
+async function fixResponse(body: any): Promise<{
   links: Links;
   petitions: PetitionInterface[];
 }> {
@@ -25,15 +25,18 @@ async function fixResponse(data: any): Promise<{
     "scheduled_debate_date",
     "debate_outcome_at",
   ];
-  for (let i = 0; i < data.data.length; i++) {
-    petition = data.data[i].attributes;
+  for (const data of body.data) {
+    console.log(data);
+    petition = data.attributes;
     for (const variable of dateVariables) {
       petition[variable] = toDate(petition[variable]);
     }
-    data.data[i].attributes = petition;
-    petitions.push(data.data[i]);
+    data.attributes = petition;
+    petitions.push(data);
+    console.log(data);
   }
-  return { links: data.links, petitions };
+
+  return { links: body.links, petitions };
 }
 
 export async function getPetitions(
@@ -42,7 +45,7 @@ export async function getPetitions(
   const x: { petitions: PetitionInterface[] } = { petitions: [] };
   await fetch(`${petitionUrl}?page=${pageNumber}&state=open`)
     .then((response) => response.json())
-    .then((data) => fixResponse(data))
+    .then((body) => fixResponse(body))
     .then((stuff) => (x.petitions = stuff.petitions))
     .catch((error) => {
       console.error(error);

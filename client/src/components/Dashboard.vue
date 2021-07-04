@@ -5,13 +5,13 @@
         <description />
         <line-chart />
         <pie-chart />
-        <twitter v-if="tweetId" :tweetId="tweetId" />
+        <tweets v-if="tweetId" :tweetId="tweetId" />
       </template>
       <template v-else>
         <description />
         <line-chart />
         <pie-chart />
-        <twitter v-if="tweetId" :tweetId="tweetId" />
+        <tweets v-if="tweetId" :tweetId="tweetId" />
       </template>
     </div>
   </MatchMedia>
@@ -22,7 +22,7 @@ import { Component, Vue } from "vue-property-decorator";
 import PieChart from "../components/PieChart.vue";
 import LineChart from "../components/LineChart.vue";
 import Description from "./Description.vue";
-import Twitter from "../components/Tweets.vue";
+import Tweets from "../components/Tweets.vue";
 import HappinessForm from "../components/HappinessForm.vue";
 import { MatchMedia } from "vue-component-media-queries";
 
@@ -30,7 +30,7 @@ import { MatchMedia } from "vue-component-media-queries";
   components: {
     PieChart,
     LineChart,
-    Twitter,
+    Tweets,
     Description,
     HappinessForm,
     MatchMedia,

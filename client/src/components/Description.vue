@@ -14,7 +14,7 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class MobileDescription extends Vue {
+export default class Description extends Vue {
   show = true;
 }
 </script>

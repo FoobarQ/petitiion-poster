@@ -194,7 +194,6 @@ input:focus {
 .header {
   position: fixed;
   height: 10%;
-  min-height: fit-content;
   width: 100%;
   z-index: 2;
   top: 0px;
@@ -243,7 +242,6 @@ input:focus {
   background-color: #080;
   position: relative;
   display: inline-block;
-  padding: 0.3em 0.6em 0.2em 0.6em;
   border: none;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;

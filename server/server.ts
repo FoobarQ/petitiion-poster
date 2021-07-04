@@ -23,6 +23,7 @@ const port = process.env.PORT || 3080;
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
+app.disable("x-powered-by");
 
 app.get("/api/tweet/:id", async (req, res) => {
   try {

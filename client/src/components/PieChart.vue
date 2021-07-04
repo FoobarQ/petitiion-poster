@@ -198,10 +198,6 @@ export default class PieChart extends Vue {
   height: fit-content;
 }
 
-button {
-  margin: 0 10px;
-}
-
 .options {
   height: 100%;
 }

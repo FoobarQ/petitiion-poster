@@ -172,10 +172,6 @@ export default class LineChart extends Vue {
   width: 66.2%;
 }
 
-button {
-  margin: 0 10px;
-}
-
 .options {
   height: 100%;
 }
