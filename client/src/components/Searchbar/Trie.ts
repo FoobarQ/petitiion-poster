@@ -142,16 +142,3 @@ function getRandString(length: number = 16) {
     }
     return rand;
 }
-
-const trie = new Trie(new TrieNode());
-const randomStrings = new Array(10)
-for (let i = 0; i < randomStrings.length; ++i) {
-    randomStrings[i] = getRandString();
-}
-console.log(randomStrings)
-randomStrings.forEach(str => {
-    trie.insert(str, str);
-});
-trie.printVals();
-const results = trie.suggestKey(randomStrings[0].charAt(0));
-console.log("Results", results)

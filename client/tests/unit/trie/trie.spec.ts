@@ -1,6 +1,5 @@
-import { describe } from 'mocha';
 import { expect } from 'chai';
-import { Trie, TrieNode } from '../model/Trie';
+import { Trie, TrieNode } from '../../../src/components/Searchbar/Trie';
 
 
 function getRandString(length: number = 16) {
@@ -32,7 +31,7 @@ describe('Testing Initialisation', () => {
 
 
 describe('Testing Trie methods', () => {
-    describe('Insert()', () => {
+    describe('insert()', () => {
         it('Should insert a key into an empty Trie', () => {
             const trie = new Trie(new TrieNode());
             const randomString = getRandString();
@@ -46,7 +45,7 @@ describe('Testing Trie methods', () => {
             expect(trie.root.children).to.contain.all.keys("t", "y");
         })
     });
-    describe('Search()', () => {
+    describe('search()', () => {
         it('Should find a string in the trie', () => {
             const trie = new Trie(new TrieNode());
             const searchString = "taps";
@@ -77,7 +76,7 @@ describe('Testing Trie methods', () => {
         })
 
     });
-    describe('Delete()', () => {
+    describe('delete()', () => {
         it('Should insert a value, then delete it', () => {
             const trie = new Trie(new TrieNode());
             const randomString = getRandString();
@@ -103,24 +102,27 @@ describe('Testing Trie methods', () => {
             const results = trie.suggestKey(randomString, 0);
             expect(results.length).to.equal(0);
         })
+        // Inserts 100 strings into the trie and saves the number of occurances of
+        // the first character in each string. This is used to expect the number
+        // of results returned by suggestKey
         it('Should return a non-empty array with at least one character', () => {
             const trie = new Trie(new TrieNode());
             const randomStrings = new Array(100)
-            let firstCharCount = {};
+            var firstCharMap = new Map();
             for (let i = 0; i < randomStrings.length; ++i) {
                 randomStrings[i] = getRandString();
                 const firstChar = randomStrings[i].charAt(0)
-                if (!(firstChar in firstCharCount)) {
-                    firstCharCount[firstChar] = 0;
+                if (!firstCharMap.has(firstChar)) {
+                    firstCharMap.set(firstChar, 0);
                 }
-                firstCharCount[firstChar] += 1;
+                firstCharMap.set(firstChar, firstCharMap.get(firstChar) + 1);
             }
             randomStrings.forEach(str => {
                 trie.insert(str, str);
             });
             const firstChar = randomStrings[0].charAt(0)
             const results = trie.suggestKey(firstChar);
-            expect(results.length).to.equal(firstCharCount[firstChar]);
+            expect(results.length).to.equal(firstCharMap.get(firstChar));
         })
 
     });
