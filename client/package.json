@@ -76,7 +76,7 @@
       {
         "files": [
           "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+          "**/*.spec.{j,t}s?(x)"
         ],
         "env": {
           "jest": true
@@ -90,6 +90,9 @@
     "not dead"
   ],
   "jest": {
-    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel"
+    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
+    "testMatch": [
+      "**/*.spec.{j,t}s?(x)"
+    ]
   }
 }
