@@ -51,9 +51,7 @@ async function updateSignatures() {
 
       page++;
     }
-  } catch (err) {
-    console.error(err);
-  }
+  } catch (err) {}
 }
 
 updateSignatures();
