@@ -123,6 +123,11 @@ export default class LineChart extends Vue {
     while (end - start > 3) {
       i = Math.round((start + end) / 2);
       if (searchList[i].name === name) {
+        Vue.set(
+          this.$store.state.signature_counts,
+          name,
+          searchList[i].signature_count
+        );
         return searchList[i].signature_count;
       } else if (searchList[i].name < name) {
         end = i;
@@ -133,6 +138,7 @@ export default class LineChart extends Vue {
 
     for (const item of searchList) {
       if (item.name === name) {
+        Vue.set(this.$store.state.signature_counts, name, item.signature_count);
         return item.signature_count;
       }
     }

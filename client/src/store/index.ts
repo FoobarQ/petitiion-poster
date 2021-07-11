@@ -79,6 +79,7 @@ const defaultState = (): AppState => {
         text: "",
       },
     },
+    signature_counts: {},
   };
 };
 
@@ -147,6 +148,9 @@ export interface AppState {
     [key: string]: number;
   };
   chartOptions: any;
+  signature_counts: {
+    [key: string]: number;
+  };
 }
 
 async function handlePetitionResponse(url: string): Promise<Attributes> {
