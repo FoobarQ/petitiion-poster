@@ -5,22 +5,29 @@
       <div class="key">
         <template>
           <h4>Tracking Realtime Signatures</h4>
-          <div class="constituency">
+          <div class="tracking">
             <input type="checkbox" name="total" checked disabled />
             <label for="total">All regions</label>
           </div>
           <div
             v-for="(item, index) in trackingNames"
             v-bind:key="index"
-            class="constituency"
+            class="tracking"
           >
             <input
               type="checkbox"
               :name="item"
               @click="toggleLine(item, trackingType[item])"
-              checked
+              :checked="item"
             />
             <label :for="item">{{ item }}</label>
+            <div class="mini-ticker">
+              {{
+                $store.state.signature_counts[item]
+                  ? $store.state.signature_counts[item]
+                  : 0
+              }}
+            </div>
           </div>
         </template>
         <h3>Add To Tracking</h3>
@@ -129,16 +136,23 @@ export default class Sidebar extends Vue {
 
   toggleLine(name: string, type: string): void {
     if (this.$store.state.keyPairs[type + ":" + name]) {
-      console.log(name, type);
-      this.trackingNames.splice(this.trackingNames.indexOf(name));
+      this.trackingNames.splice(this.trackingNames.indexOf(name), 1);
       delete this.trackingType[name];
 
-      console.log(this.$store.state.keyPairs[type + ":" + name]);
-      console.log(type, name);
       this.$store.state.chartOptions.series.splice(
-        this.$store.state.keyPairs[type + ":" + name]
+        this.$store.state.keyPairs[type + ":" + name],
+        1
       );
+      for (const key in this.$store.state.keyPairs) {
+        if (
+          this.$store.state.keyPairs[key] >
+          this.$store.state.keyPairs[type + ":" + name]
+        ) {
+          this.$store.state.keyPairs[key]--;
+        }
+      }
       delete this.$store.state.keyPairs[type + ":" + name];
+      return;
     }
 
     this.$store.state.keyPairs[type + ":" + name] =
@@ -153,7 +167,7 @@ export default class Sidebar extends Vue {
       showInLegend: this.$store.getters.showRealtime,
       name,
     });
-    this.trackingNames.push(name);
+    Vue.set(this.trackingNames, this.trackingNames.length, name);
     this.trackingType[name] = type;
   }
 }
@@ -171,15 +185,25 @@ export default class Sidebar extends Vue {
 }
 
 .region:hover,
-.constituency:hover {
+.constituency:hover,
+.tracking:hover {
   background: rgb(240, 240, 240);
   cursor: pointer;
 }
 
-.constituency {
+.constituency,
+.tracking {
   border-bottom-style: solid;
   border-bottom-width: 0px;
   text-align: left;
+}
+
+.tracking {
+  padding-top: 3px;
+  border-top-color: lightgrey;
+  border-top-width: 1px;
+  border-top-style: solid;
+  vertical-align: text-bottom;
 }
 
 .sidebar > div {
@@ -233,5 +257,22 @@ h3 {
 input[type="text"] {
   width: 95%;
   margin-bottom: 4px;
+}
+
+.mini-ticker {
+  height: 100%;
+  max-width: 20%;
+  float: right;
+  font-weight: bold;
+  padding-top: 2px;
+  padding-right: 2px;
+}
+
+.tracking:hover > .mini-ticker {
+  color: #080;
+}
+
+.tracking:first-of-type {
+  border-top-color: white;
 }
 </style>
