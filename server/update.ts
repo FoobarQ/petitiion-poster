@@ -48,7 +48,7 @@ async function updatePetition() {
         .then((response) => response.json())
         .then((data) => data.data.attributes)
         .then(
-          (attributes) =>
+          (attributes: Attributes) =>
             new Promise<string[]>((resolve, reject) => {
               const { government_response, debate } = attributes;
 
@@ -69,8 +69,14 @@ async function updatePetition() {
               }
 
               if (!petition.debate && debate) {
-                let tweetBody = `Debated on ${debate.debated_on}\n\n`;
-                tweetBody += `Watch here: ${debate.video_url}\n`;
+                let tweetBody = "";
+                if (debate.debated_on) {
+                  tweetBody = `Debated on ${debate.debated_on}\n\n`;
+                  tweetBody += `Watch here: ${debate.video_url}\n`;
+                } else {
+                  tweetBody = shorten(debate.overview, 275);
+                }
+
                 tweets.push(tweetBody);
                 petition.debate = true;
               }
