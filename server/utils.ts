@@ -65,5 +65,5 @@ export function shorten(long: string, targetLength: number) {
     )}`;
   }
 
-  return long.slice(0, targetLength);
+  return `${long.slice(0, targetLength - 3)}...`;
 }
