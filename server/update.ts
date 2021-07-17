@@ -74,7 +74,7 @@ async function updatePetition() {
                   tweetBody = `Debated on ${debate.debated_on}\n\n`;
                   tweetBody += `Watch here: ${debate.video_url}\n`;
                 } else {
-                  tweetBody = shorten(debate.overview, 275);
+                  tweetBody = shorten(`"${debate.overview}"`, 275);
                 }
 
                 tweets.push(tweetBody);
