@@ -39,10 +39,11 @@ a {
   display: none;
 }
 
+body {
+  margin: 0px;
+}
+
 @media (max-width: 1080px) {
-  body {
-    margin: 0px;
-  }
   .title.mobile {
     display: block;
     min-width: 98%;

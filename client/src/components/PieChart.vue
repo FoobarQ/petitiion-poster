@@ -202,11 +202,6 @@ export default class PieChart extends Vue {
   height: 100%;
 }
 
-svg {
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
-}
-
 button {
   height: 32px;
   width: 34%;
@@ -222,14 +217,6 @@ button.mid {
   border-left-width: 1px;
   border-right-width: 1px;
   border-color: lightgrey;
-}
-
-button.left {
-  border-bottom-left-radius: 10px;
-}
-
-button.right {
-  border-bottom-right-radius: 10px;
 }
 
 button:hover:not([disabled]) {

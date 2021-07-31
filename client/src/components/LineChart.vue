@@ -172,7 +172,6 @@ export default class LineChart extends Vue {
 }
 
 .linechart {
-  border-radius: 10px;
   border-width: 1px;
   height: fit-content;
   width: 66.2%;

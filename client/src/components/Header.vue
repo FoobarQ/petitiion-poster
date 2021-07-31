@@ -63,7 +63,6 @@ input:focus {
   width: 100%;
   z-index: 2;
   top: 0px;
-  box-shadow: 0px 5px 3px 0px #ccc;
   min-height: 10%;
 }
 
