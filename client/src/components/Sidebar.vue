@@ -218,6 +218,7 @@ export default class Sidebar extends Vue {
   position: fixed;
   z-index: 1;
   bottom: 4%;
+  background: white;
 }
 
 .key {

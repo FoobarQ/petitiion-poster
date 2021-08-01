@@ -52,15 +52,19 @@ export default class Dashboard extends Vue {
 .dash {
   position: fixed;
   top: 10%;
-  left: 300px;
+  left: 350px;
+  right: 50px;
+  min-width: 1570px;
   overflow-y: auto;
   overflow-x: auto;
-  right: 0px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgrey;
   bottom: 0px;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  background-color: rgb(247, 247, 247);
+  background-color: white;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -70,18 +74,15 @@ export default class Dashboard extends Vue {
 }
 
 .dash > div {
-  margin: 1.25em;
   border-style: solid;
   border-color: lightgrey;
   border-width: 1px;
+  border-top: none;
+  border-left: none;
   background: white;
 }
 
 @media (max-width: 1920px) {
-  .dash > div {
-    margin-top: 1%;
-    margin-bottom: 1%;
-  }
 }
 
 @media (max-width: 1080px) {
