@@ -52,11 +52,9 @@ export default class Dashboard extends Vue {
 .dash {
   position: fixed;
   top: 10%;
-  left: 350px;
-  right: 50px;
-  min-width: 1570px;
-  overflow-y: auto;
-  overflow-x: auto;
+  right: 50%;
+  margin-right: -700px;
+  width: 1400px;
   border-style: solid;
   border-width: 1px;
   border-color: lightgrey;

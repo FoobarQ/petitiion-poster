@@ -194,7 +194,6 @@ export default class PieChart extends Vue {
 }
 
 .piechart {
-  width: 30%;
   height: fit-content;
 }
 
@@ -231,17 +230,5 @@ button[disabled] {
 
 .piechart > .desktop > h1 {
   margin-bottom: 0.4%;
-}
-
-@media (max-width: 1080px) {
-  .piechart {
-    width: 98%;
-  }
-}
-
-@media (max-width: 2559px) {
-  .piechart {
-    width: 34.5%;
-  }
 }
 </style>

@@ -86,6 +86,7 @@
         to stay up to date with government petitions.
       </div>
     </div>
+    <div>test</div>
   </div>
 </template>
 
@@ -206,7 +207,7 @@ export default class Sidebar extends Vue {
   vertical-align: text-bottom;
 }
 
-.sidebar > div {
+.sidebar:first-child {
   width: 11%;
   min-width: 300px;
   float: left;
@@ -219,6 +220,7 @@ export default class Sidebar extends Vue {
   z-index: 1;
   bottom: 4%;
   background: white;
+  display: none;
 }
 
 .key {
