@@ -12,8 +12,8 @@
         </template>
         <template v-else-if="$store.state.status">
           <Header />
-          <Sidebar />
           <Dashboard />
+          <Map />
         </template>
         <template v-else>
           <div class="None">
@@ -38,6 +38,7 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import { MediaQueryProvider, MatchMedia } from "vue-component-media-queries";
 import Follow from "../components/Follow.vue";
 import Footer from "../components/Footer.vue";
+import Map from "../components/Map.vue";
 
 const seconds = 1000;
 @Component({
@@ -50,6 +51,7 @@ const seconds = 1000;
     MatchMedia,
     Follow,
     Footer,
+    Map,
   },
 })
 export default class Petition extends Vue {

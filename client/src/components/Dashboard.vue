@@ -11,6 +11,7 @@
         <description />
         <line-chart />
         <pie-chart />
+        <img src="/uk.svg" alt="Kiwi standing on oval" />
         <tweets v-if="tweetId" :tweetId="tweetId" />
       </template>
     </div>
@@ -80,7 +81,8 @@ export default class Dashboard extends Vue {
   background: white;
 }
 
-@media (max-width: 1920px) {
+img {
+  height: 200px;
 }
 
 @media (max-width: 1080px) {
