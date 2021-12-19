@@ -27,7 +27,9 @@ a {
 .description {
   height: fit-content;
   z-index: 3;
-  width: 98%;
+  width: 100%;
+  border-right: none;
+  padding: 3px;
 }
 p {
   color: #080;
@@ -37,12 +39,6 @@ p {
 @media (max-width: 1080px) {
   p {
     padding: 4px;
-  }
-}
-
-@media (max-width: 2520px) {
-  .description {
-    width: 97%;
   }
 }
 </style>

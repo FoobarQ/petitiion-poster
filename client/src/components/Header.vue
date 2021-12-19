@@ -8,8 +8,6 @@
           v-model="newId"
           v-on:keyup.enter="submit"
         />
-        <a class="button" :href="link">Go To Petition</a>
-        <a class="button" href="/">Find Other Petitions</a>
       </h1>
       <div class="bumper">
         <h2>by {{ $store.state.petition.creator_name || "Anonymous" }}</h2>
@@ -63,8 +61,8 @@ input:focus {
   width: 100%;
   z-index: 2;
   top: 0px;
-  box-shadow: 0px 5px 3px 0px #ccc;
   min-height: 10%;
+  background: white;
 }
 
 .bumper {
@@ -73,6 +71,7 @@ input:focus {
   color: white;
   bottom: 0px;
   margin: 0;
+  padding-left: 175px;
 }
 
 .bumper h2 {
@@ -81,7 +80,6 @@ input:focus {
 
 .header h1 {
   font-size: 2.5em;
-  background: none;
 }
 
 .header h2 {
@@ -91,6 +89,10 @@ input:focus {
 .data {
   position: absolute;
   bottom: 0px;
+}
+
+.data h1 {
+  padding-left: 350px;
 }
 
 .button:before {

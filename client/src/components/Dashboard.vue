@@ -11,6 +11,7 @@
         <description />
         <line-chart />
         <pie-chart />
+        <img src="/uk.svg" alt="Kiwi standing on oval" />
         <tweets v-if="tweetId" :tweetId="tweetId" />
       </template>
     </div>
@@ -52,15 +53,17 @@ export default class Dashboard extends Vue {
 .dash {
   position: fixed;
   top: 10%;
-  left: 309px;
-  overflow-y: auto;
-  overflow-x: auto;
-  right: 0px;
+  right: 50%;
+  margin-right: -700px;
+  width: 1400px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgrey;
   bottom: 0px;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  background-color: rgb(247, 247, 247);
+  background-color: white;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -70,19 +73,16 @@ export default class Dashboard extends Vue {
 }
 
 .dash > div {
-  margin: 1.25em;
   border-style: solid;
   border-color: lightgrey;
-  border-radius: 10px;
   border-width: 1px;
+  border-top: none;
+  border-left: none;
   background: white;
 }
 
-@media (max-width: 1920px) {
-  .dash > div {
-    margin-top: 1%;
-    margin-bottom: 1%;
-  }
+img {
+  height: 200px;
 }
 
 @media (max-width: 1080px) {

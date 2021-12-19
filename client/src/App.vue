@@ -23,6 +23,7 @@ export default class App extends Vue {}
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background-color: #dee0e2;
 }
 
 a {
@@ -39,10 +40,12 @@ a {
   display: none;
 }
 
+body {
+  margin: 0px;
+  background: #dee0e2;
+}
+
 @media (max-width: 1080px) {
-  body {
-    margin: 0px;
-  }
   .title.mobile {
     display: block;
     min-width: 98%;
