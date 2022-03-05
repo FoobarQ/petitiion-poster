@@ -15,7 +15,8 @@
       "target": "ESNext",
       "strict": true,
       "typeRoots": [
-         "./types"
+         "./types",
+         "./node_modules/@types"
        ]
    }
 }
