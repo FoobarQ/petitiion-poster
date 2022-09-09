@@ -35,7 +35,7 @@ async function getDebatedPetitionsIds(): Promise<string[]> {
 async function deletePetitionsById(ids: string[]) {
     await client.query(
         "DELETE FROM petition WHERE id = ANY($1)",
-        ids
+        [ids]
     );
 
     console.log(`Deleted ${ids.length} petitions`);
