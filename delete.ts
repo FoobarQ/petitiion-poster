@@ -22,16 +22,6 @@ async function getExpiredPetitionIds(): Promise<string[]> {
     return result.rows.map(row => row.id);
 }
 
-async function getDebatedPetitionsIds(): Promise<string[]> {
-    const result = await client.query(
-        "SELECT id FROM petition WHERE response = TRUE AND debate = TRUE"
-    );
-
-    console.log(`Found ${result.rowCount} petitions that have been debated`);
-
-    return result.rows.map(row => row.id);
-}
-
 async function deletePetitionsById(ids: string[]) {
     await client.query(
         "DELETE FROM petition WHERE id = ANY($1)",
@@ -44,6 +34,4 @@ async function deletePetitionsById(ids: string[]) {
 }
 
 getExpiredPetitionIds()
-    .then((ids) => deletePetitionsById(ids))
-    .then(() => getDebatedPetitionsIds())
     .then((ids) => deletePetitionsById(ids))
