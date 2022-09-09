@@ -14,16 +14,20 @@ const client = new pg.Pool({
 
 async function getExpiredPetitionIds(): Promise<string[]> {
     const result = await client.query(
-        "SELECT id FROM petition WHERE response = TRUE AND debate = TRUE"
+        "SELECT id FROM petition WHERE deadline < now()"
     );
+
+    console.log(`Found ${result.rowCount} expired petitions`);
 
     return result.rows.map(row => row.id);
 }
 
-async function getPetitionsWithResponseIds(): Promise<string[]> {
+async function getDebatedPetitionsIds(): Promise<string[]> {
     const result = await client.query(
-        "SELECT id FROM petition WHERE deadline < now()"
+        "SELECT id FROM petition WHERE response = TRUE AND debate = TRUE"
     );
+
+    console.log(`Found ${result.rowCount} petitions that have been debated`);
 
     return result.rows.map(row => row.id);
 }
@@ -35,10 +39,11 @@ async function deletePetitionsById(ids: string[]) {
     );
 
     console.log(`Deleted ${ids.length} petitions`);
+
     return ids.length;
 }
 
 getExpiredPetitionIds()
     .then((ids) => deletePetitionsById(ids))
-    .then(() => getPetitionsWithResponseIds())
+    .then(() => getDebatedPetitionsIds())
     .then((ids) => deletePetitionsById(ids))
