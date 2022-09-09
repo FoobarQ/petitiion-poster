@@ -32,7 +32,7 @@ const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
   : 2;
 
-async function createPetition(): Promise<number | void> {
+export async function createPetitions(): Promise<number | void> {
   let tweetsMade = 0;
   let page = 1;
 
@@ -147,9 +147,8 @@ async function composeTweet(petition: PetitionInterface) {
   tweet += `\nDeadline: ${deadline.toLocaleDateString("en-GB", {
     timeZone: "UTC",
   })}`;
-  tweet += `\n${
-    topics ? topics.map((element) => hashtagify(element)) : ""
-  }#UKPetition #UK #UnitedKingdom`;
+  tweet += `\n${topics ? topics.map((element) => hashtagify(element)) : ""
+    }#UKPetition #UK #UnitedKingdom`;
   tweet = `Petition: ${shorten(action, 280 - (tweet.length + 34)) + tweet}`;
   tweet += `\n${links.self.replace(".json", "")}`;
   return tweet;
@@ -172,4 +171,4 @@ function hashtagify(input: string) {
   return `#${x.join("")} `;
 }
 
-createPetition();
+createPetitions();
