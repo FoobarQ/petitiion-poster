@@ -33,7 +33,7 @@ const options = {
   },
 };
 
-async function updatePetition() {
+export async function updatePetitions() {
   let updatesMade = 0;
   try {
     console.log("Finding petitions to update");
@@ -57,13 +57,12 @@ async function updatePetition() {
               if (!petition.response && government_response) {
                 const tweetstart = `Govt. response from ${government_response.responded_on}:\n\n`;
                 const tweetEnd = `Click the link above for more info.`;
-                const tweetBody = `"${
-                  tweetstart +
+                const tweetBody = `"${tweetstart +
                   shorten(
                     government_response.summary,
                     280 - (tweetstart.length + tweetEnd.length + 4)
                   )
-                }"\n\n${tweetEnd}`;
+                  }"\n\n${tweetEnd}`;
                 tweets.push(tweetBody);
                 petition.response = true;
               }
@@ -145,4 +144,4 @@ async function updateTweet(
   return tweetConfirmation;
 }
 
-updatePetition();
+updatePetitions();

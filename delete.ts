@@ -29,9 +29,7 @@ async function deletePetitionsById(ids: string[]) {
     );
 
     console.log(`Deleted ${ids.length} petitions`);
-
-    return ids.length;
 }
 
-getExpiredPetitionIds()
-    .then((ids) => deletePetitionsById(ids))
+export const deletePetitions = async () => getExpiredPetitionIds().then(ids => deletePetitionsById(ids));
+deletePetitions();
