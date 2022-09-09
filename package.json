@@ -46,7 +46,8 @@
 		"post": "node --experimental-specifier-resolution=node ./build/create",
 		"delete": "node --experimental-specifier-resolution=node ./build/delete",
 		"update": "node --experimental-specifier-resolution=node ./build/update",
-		"test": "node --experimental-specifier-resolution=node ./build/test"
+		"test": "node --experimental-specifier-resolution=node ./build/test",
+		"manage": "node --experimental-specifier-resolution=node ./build/main"
 	},
 	"type": "module"
 }
