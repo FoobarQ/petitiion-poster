@@ -51,7 +51,13 @@ async function createPetition(): Promise<number | void> {
         [petition.id]
       );
       if (entity.rows[0]) {
+        //already tracking this petition
         console.log(entity.rows[0].id);
+        continue;
+      }
+
+      if (petition.attributes.debate_outcome_at && petition.attributes.debate_outcome_at.getTime() < Date.now()) {
+        //already processed and deleted this petition from the database
         continue;
       }
 
@@ -129,21 +135,14 @@ async function composeTweet(petition: PetitionInterface) {
       : "Awaiting response";
   }
   if (debate_threshold_reached_at) {
-    if (debate_outcome_at) {
-      status +=
-        " & " + (new Date().getTime() < debate_outcome_at.getTime())
-          ? ", awaiting debate outcome"
-          : ", recieved debate outcome";
-    } else {
-      if (
-        scheduled_debate_date &&
-        new Date().getTime() < scheduled_debate_date.getTime()
-      ) {
-        status += ", awaiting debate";
-      }
+    if (debate_outcome_at && new Date().getTime() < debate_outcome_at.getTime())
+      status += ", awaiting debate outcome";
+    else if (scheduled_debate_date && new Date().getTime() < scheduled_debate_date.getTime())
+      status += ", awaiting debate";
+    else
       status += ", debate date not set";
-    }
   }
+
   let tweet = status ? `\n\n${status}.` : "\n\n";
   tweet += `\nDeadline: ${deadline.toLocaleDateString("en-GB", {
     timeZone: "UTC",
