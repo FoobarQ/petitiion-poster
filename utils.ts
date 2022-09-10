@@ -67,3 +67,10 @@ export function shorten(long: string, targetLength: number) {
 
   return `${long.slice(0, targetLength - 3)}...`;
 }
+
+export async function getOpenPetitionsPageCount(): Promise<number> {
+  const { links } = await fetch(`${petitionUrl}?state=open`)
+    .then((response) => response.json());
+
+  return parseInt(links["last"].replaceAll(/[^\d]/i, ""));
+}

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import request from "request-promise";
-import { getPetitions, shorten } from "./utils";
+import { getOpenPetitionsPageCount, getPetitions, shorten } from "./utils";
 import pg from "pg";
 
 const client = new pg.Pool({
@@ -35,15 +35,12 @@ const TWEET_LIMIT = process.env.TWEET_LIMIT
 export async function createPetitions(): Promise<number | void> {
   let tweetsMade = 0;
   let page = 1;
+  let pageCount = await getOpenPetitionsPageCount();
 
-  while (tweetsMade < TWEET_LIMIT) {
-    console.log("Retrieving petitions...");
+  while (tweetsMade < TWEET_LIMIT && page <= pageCount) {
+    console.log(`Petition page ${page} of ${pageCount} pages...`);
 
     let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
-    if (!petitions) {
-      console.log("page limit reached.");
-      return;
-    }
 
     for (const petition of petitions) {
       const entity = await client.query(
@@ -52,7 +49,6 @@ export async function createPetitions(): Promise<number | void> {
       );
       if (entity.rows[0]) {
         //already tracking this petition
-        console.log(entity.rows[0].id);
         continue;
       }
 
@@ -62,16 +58,12 @@ export async function createPetitions(): Promise<number | void> {
       }
 
       console.log("NEW PETITION: " + petition.attributes.action);
-      console.log("Making tweet...");
 
       await composeTweet(petition)
         .then((tweet) => postTweet(tweet))
         .then(async (tweetConfirmation) => {
           const tweetId = tweetConfirmation.id_str;
           const tweetTimestamp = tweetConfirmation.created_at;
-
-          console.log("  Success.");
-          console.log("Updating database...");
 
           const petitionEntry: any = {};
           petitionEntry.deadline = new Date(petition.attributes.opened_at);
@@ -102,17 +94,12 @@ export async function createPetitions(): Promise<number | void> {
           );
         })
         .then(() => {
-          console.log("  Success.");
           tweetsMade++;
         });
-      if (tweetsMade >= TWEET_LIMIT) {
-        console.log("Process finished successfully.");
-        return 0;
-      }
     }
     page++;
   }
-  console.log("No new petitions to post.");
+  console.log(`Tweet count: ${tweetsMade}, no more new petitions to post.`);
 }
 
 async function composeTweet(petition: PetitionInterface) {
