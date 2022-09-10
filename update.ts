@@ -49,7 +49,7 @@ export async function updatePetitions() {
 
       if (error) {
         switch (error) {
-          case "gone":
+          case "Gone":
             console.log(`Petition ${petition.id} no longer exists`);
             deletePetitionsById([petition]);
             break;
