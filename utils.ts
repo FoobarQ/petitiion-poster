@@ -70,5 +70,5 @@ export async function getOpenPetitionsPageCount(): Promise<number> {
   const { links } = await fetch(`${petitionUrl}?state=open`)
     .then((response) => response.json());
 
-  return parseInt(links["last"].replaceAll(/[^\d]/i, ""));
+  return parseInt(links["last"].replaceAll(/[^\d]/g, ""));
 }
