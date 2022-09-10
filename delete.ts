@@ -32,4 +32,3 @@ async function deletePetitionsById(ids: string[]) {
 }
 
 export const deletePetitions = async () => getExpiredPetitionIds().then(ids => deletePetitionsById(ids));
-deletePetitions();
