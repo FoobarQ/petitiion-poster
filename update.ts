@@ -140,5 +140,3 @@ async function updateTweet(
 
   return tweetConfirmation;
 }
-
-updatePetitions();

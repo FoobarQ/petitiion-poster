@@ -158,4 +158,3 @@ function hashtagify(input: string) {
   return `#${x.join("")} `;
 }
 
-createPetitions();
