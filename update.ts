@@ -36,6 +36,7 @@ const options = {
 
 export async function updatePetitions() {
   let updatesMade = 0;
+  let petitionsToDelete = [];
   try {
     console.log("Finding petitions to update");
     const petitions = await client.query(
@@ -51,7 +52,7 @@ export async function updatePetitions() {
         switch (error) {
           case "Gone":
             console.log(`Petition ${petition.id} no longer exists`);
-            deletePetitionsById([petition]);
+            petitionsToDelete.push(petition.id);
             break;
           default:
             console.error(`Petition ${petition.id} Error: ${error}`);
@@ -100,11 +101,15 @@ export async function updatePetitions() {
       updatesMade++;
 
       if (updatesMade >= UPDATE_LIMIT) {
-        console.log("Update finished.");
-        return;
+        break;
       }
     }
+    deletePetitionsById([]);
     console.log("Update finished.");
+    if (petitionsToDelete.length) {
+      console.log("Deleting broken petitions");
+      deletePetitionsById(petitionsToDelete);
+    }
   } catch (notFoundError) {
     console.log("Nothing to update.");
   }
