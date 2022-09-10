@@ -48,8 +48,11 @@ export async function updatePetitions() {
         .then((response) => response.json())
         .then((data) => data.data.attributes)
         .then(
-          (attributes: Attributes) =>
+          (attributes?: Attributes) =>
             new Promise<string[]>((resolve, reject) => {
+              if (!attributes)
+                return reject(`${petition.id} is undefined`);
+
               const { government_response, debate } = attributes;
 
               const tweets = [];
@@ -80,11 +83,9 @@ export async function updatePetitions() {
                 petition.debate = true;
               }
 
-              if (tweets.length > 0) {
+              if (tweets.length > 0)
                 return resolve(tweets);
-              } else {
-                return reject(`it has no updates`);
-              }
+              return reject(`it has no updates`);
             })
         )
         .then((tweets) => updateTweet(petition.tweetid, tweets, petition.id))
