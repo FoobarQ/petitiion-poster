@@ -81,7 +81,6 @@ export async function updatePetitions() {
               }
 
               if (tweets.length > 0) {
-                console.log(tweets);
                 return resolve(tweets);
               } else {
                 return reject(`it has no updates`);
@@ -97,7 +96,6 @@ export async function updatePetitions() {
           );
         })
         .then(() => {
-          console.log(`Petition ${petition.id} updated.`);
           updatesMade++;
         })
         .catch((error) => {
@@ -106,12 +104,10 @@ export async function updatePetitions() {
           );
         });
       if (updatesMade >= UPDATE_LIMIT) {
-        console.log("Process finished successfully");
-        return 0;
+        console.log("\nPetitions updated.");
+        return;
       }
     }
-    console.log("\nPetitions updated.");
-    console.log("Process finished successfully");
   } catch (notFoundError) {
     console.log("Nothing to update.");
   }

@@ -26,14 +26,12 @@ async function fixResponse(body: any): Promise<{
     "debate_outcome_at",
   ];
   for (const data of body.data) {
-    console.log(data);
     petition = data.attributes;
     for (const variable of dateVariables) {
       petition[variable] = toDate(petition[variable]);
     }
     data.attributes = petition;
     petitions.push(data);
-    console.log(data);
   }
 
   return { links: body.links, petitions };
