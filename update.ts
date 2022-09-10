@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import request from "request-promise";
 import pg from "pg";
 import { shorten } from "./utils";
+import { deletePetitionsById } from "./delete";
 
 const client = new pg.Pool({
   user: process.env.TIMESCALE_USER || "user",
@@ -42,76 +43,62 @@ export async function updatePetitions() {
     );
 
     for (const petition of petitions.rows) {
-      await fetch(
+      const { data, error } = await fetch(
         `https://petition.parliament.uk/petitions/${petition.id}.json`
-      )
-        .then((response) => response.json())
-        .then((data) => data.data.attributes)
-        .then(
-          (attributes?: Attributes) =>
-            new Promise<string[]>((resolve, reject) => {
-              if (!attributes)
-                return reject(`${petition.id} is undefined`);
+      ).then((response) => response.json());
 
-              let government_response, debate;
+      if (error) {
+        switch (error) {
+          case "gone":
+            console.log(`Petition ${petition.id} no longer exists`);
+            deletePetitionsById([petition]);
+            break;
+          default:
+            console.error(`Petition ${petition.id} Error: ${error}`);
+        }
+        continue; //mark for delete
 
-              try {
-                government_response = attributes.government_response;
-                debate = attributes.debate;
-              } catch (TypeError) {
-                return reject(`${petition.id} is erroring out`);
-              }
+      }
 
-              const tweets = [];
+      const { government_response, debate } = data.attributes;
 
-              if (!petition.response && government_response) {
-                const tweetstart = `Govt. response from ${government_response.responded_on}:\n\n`;
-                const tweetEnd = `Click the link above for more info.`;
-                const tweetBody = `"${tweetstart +
-                  shorten(
-                    government_response.summary,
-                    280 - (tweetstart.length + tweetEnd.length + 4)
-                  )
-                  }"\n\n${tweetEnd}`;
-                tweets.push(tweetBody);
-                petition.response = true;
-              }
+      const tweets = [];
 
-              if (!petition.debate && debate) {
-                let tweetBody = "";
-                if (debate.debated_on) {
-                  tweetBody = `Debated on ${debate.debated_on}\n\n`;
-                  tweetBody += `Watch here: ${debate.video_url}\n`;
-                } else {
-                  tweetBody = shorten(`"${debate.overview}"`, 275);
-                }
+      if (!petition.response && government_response) {
+        const tweetStart = `Govt. response from ${government_response.responded_on}:`;
+        const tweetEnd = `Click the link above for more info.`;
+        const tweetFormatLength = 280 - (tweetStart.length + tweetEnd.length + 6)
+        const shortenGovtResponse = shorten(government_response.summary, tweetFormatLength)
+        const tweetBody = [tweetStart, shortenGovtResponse, tweetEnd].join("\n\n");
+        tweets.push(tweetBody);
+        petition.response = true;
+      }
 
-                tweets.push(tweetBody);
-                petition.debate = true;
-              }
+      if (!petition.debate && debate) {
+        let tweetBody = "";
+        if (debate.debated_on) {
+          tweetBody = `Debated on ${debate.debated_on}\n\n`;
+          tweetBody += `Watch here: ${debate.video_url}\n`;
+        } else {
+          tweetBody = shorten(`"${debate.overview}"`, 275);
+        }
 
-              if (tweets.length > 0)
-                return resolve(tweets);
-              return reject(`it has no updates`);
-            })
-        )
-        .then((tweets) => updateTweet(petition.tweetid, tweets, petition.id))
-        .then((tweetId) => {
-          petition.tweetId = tweetId;
-          return client.query(
-            'UPDATE petition SET "tweetid" = $1, response = $2, debate = $3 WHERE id = $4',
-            [petition.tweetId, petition.response, petition.debate, petition.id]
-          );
-        })
-        .then(() => {
-          updatesMade++;
-        })
-        .catch((error) => {
-          if (error != "it has no updates") {
-            console.error(error);
-            console.log(petition.id);
-          }
-        });
+        tweets.push(tweetBody);
+        petition.debate = true;
+      }
+
+      if (!tweets.length)
+        continue
+
+      const tweetId = await updateTweet(petition.tweetid, tweets, petition.id);
+
+      petition.tweetId = tweetId;
+      await client.query(
+        'UPDATE petition SET "tweetid" = $1, response = $2, debate = $3 WHERE id = $4',
+        [petition.tweetId, petition.response, petition.debate, petition.id]
+      );
+      updatesMade++;
+
       if (updatesMade >= UPDATE_LIMIT) {
         console.log("Update finished.");
         return;

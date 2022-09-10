@@ -22,7 +22,7 @@ async function getExpiredPetitionIds(): Promise<string[]> {
     return result.rows.map(row => row.id);
 }
 
-async function deletePetitionsById(ids: string[]) {
+export async function deletePetitionsById(ids: string[]) {
     await client.query(
         "DELETE FROM petition WHERE id = ANY($1)",
         [ids]
