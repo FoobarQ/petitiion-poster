@@ -53,7 +53,14 @@ export async function updatePetitions() {
               if (!attributes)
                 return reject(`${petition.id} is undefined`);
 
-              const { government_response, debate } = attributes;
+              let government_response, debate;
+
+              try {
+                government_response = attributes.government_response;
+                debate = attributes.debate;
+              } catch (TypeError) {
+                return reject(`${petition.id} is erroring out`);
+              }
 
               const tweets = [];
 
