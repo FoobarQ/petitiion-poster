@@ -104,7 +104,6 @@ export async function updatePetitions() {
         break;
       }
     }
-    deletePetitionsById([]);
     console.log("Update finished.");
     if (petitionsToDelete.length) {
       console.log("Deleting broken petitions");
