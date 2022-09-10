@@ -99,15 +99,15 @@ export async function updatePetitions() {
           updatesMade++;
         })
         .catch((error) => {
-          console.error(
-            `Update failed for Petition (${petition.id}) because ${error}`
-          );
+          if (error != "it has no updates")
+            console.error(error);
         });
       if (updatesMade >= UPDATE_LIMIT) {
-        console.log("\nPetitions updated.");
+        console.log("Update finished.");
         return;
       }
     }
+    console.log("Update finished.");
   } catch (notFoundError) {
     console.log("Nothing to update.");
   }
