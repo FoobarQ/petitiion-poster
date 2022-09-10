@@ -107,9 +107,10 @@ export async function updatePetitions() {
           updatesMade++;
         })
         .catch((error) => {
-          if (error != "it has no updates")
+          if (error != "it has no updates") {
             console.error(error);
-          console.log(petition.id);
+            console.log(petition.id);
+          }
         });
       if (updatesMade >= UPDATE_LIMIT) {
         console.log("Update finished.");
