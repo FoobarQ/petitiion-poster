@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import request from "request-promise";
 import { getOpenPetitionsPageCount, getPetitions, shorten } from "./utils";
-import pg from "pg";
 import {pgClient} from './pgClient';
 
 
