@@ -70,3 +70,18 @@ interface Rejection {
   code: string;
   details: string;
 }
+
+interface TweetOptions {
+  method: string;
+  url: string;
+  oauth: {
+      consumer_key: string | undefined;
+      consumer_secret: string | undefined;
+      token: string | undefined;
+      token_secret: string | undefined;
+  };
+  form: {
+      in_reply_to_status_id?: string;
+      status: string;
+  };
+}
