@@ -1,25 +1,12 @@
 import request from "request-promise";
-import { shorten } from "./utils";
+import { shorten, getTweetOptions } from "./utils";
 import { deletePetitionsById } from "./delete";
 import {dbClient} from './dbClient';
 
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
   ? parseInt(process.env.UPDATE_LIMIT)
   : 2;
-const options = {
-  method: "POST",
-  url: "https://api.twitter.com/1.1/statuses/update.json",
-  oauth: {
-    consumer_key: process.env.TWITTER_KEY,
-    consumer_secret: process.env.TWITTER_SECRET_KEY,
-    token: process.env.TWITTER_ACCESS_TOKEN,
-    token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-  },
-  form: {
-    in_reply_to_status_id: "1390725647329370114",
-    status: "@UKPetitionPosts Computer says no",
-  },
-};
+const options = getTweetOptions(true);
 
 export async function updatePetitions() {
   let updatesMade = 0;

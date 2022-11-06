@@ -72,3 +72,23 @@ export async function getOpenPetitionsPageCount(): Promise<number> {
 
   return parseInt(links["last"].replaceAll(/[^\d]/g, ""));
 }
+
+export const getTweetOptions = (response?: boolean): TweetOptions => {
+  let options: any = {
+    method: "POST",
+    url: "https://api.twitter.com/1.1/statuses/update.json",
+    oauth: {
+      consumer_key: process.env.TWITTER_KEY,
+      consumer_secret: process.env.TWITTER_SECRET_KEY,
+      token: process.env.TWITTER_ACCESS_TOKEN,
+      token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+    },
+    form: {
+      in_reply_to_status_id: "1390725647329370114",
+      status: "@UKPetitionPosts Computer says no",
+    }
+  };
+  if (!response)
+    delete options.form.in_reply_to_status_id;
+  return options;
+};

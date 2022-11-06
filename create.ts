@@ -1,21 +1,9 @@
 import request from "request-promise";
-import { getOpenPetitionsPageCount, getPetitions, shorten } from "./utils";
+import { getOpenPetitionsPageCount, getPetitions, getTweetOptions, shorten } from "./utils";
 import {dbClient} from './dbClient';
 
 
-const options = {
-  method: "POST",
-  url: "https://api.twitter.com/1.1/statuses/update.json",
-  oauth: {
-    consumer_key: process.env.TWITTER_KEY,
-    consumer_secret: process.env.TWITTER_SECRET_KEY,
-    token: process.env.TWITTER_ACCESS_TOKEN,
-    token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-  },
-  form: {
-    status: "@UKPetitionPosts Computer says no",
-  },
-};
+const options = getTweetOptions(false);
 
 const TWEET_LIMIT = process.env.TWEET_LIMIT
   ? parseInt(process.env.TWEET_LIMIT)
