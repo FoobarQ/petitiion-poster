@@ -13,7 +13,7 @@ interface Links {
 
 interface PetitionInterface {
   type: string;
-  id: number;
+  id: string;
   links: Pick<Links, "self">;
   attributes: Attributes;
 }

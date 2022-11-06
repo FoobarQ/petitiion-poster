@@ -1,8 +1,7 @@
-import "reflect-metadata";
 import request from "request-promise";
 import { shorten } from "./utils";
 import { deletePetitionsById } from "./delete";
-import {pgClient} from './pgClient';
+import {dbClient} from './dbClient';
 
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
   ? parseInt(process.env.UPDATE_LIMIT)
@@ -27,11 +26,20 @@ export async function updatePetitions() {
   let petitionsToDelete = [];
   try {
     console.log("Finding petitions to update");
-    const petitions = await pgClient.query(
-      "SELECT * FROM petition WHERE response = FALSE OR debate = FALSE"
-    );
+    const petitions = await dbClient.petition.findMany({
+      where: {
+        OR: [
+          {
+            response: false
+          },
+          {
+            debate: false
+          },
+        ]
+      }
+    });
 
-    for (const petition of petitions.rows) {
+    for (const petition of petitions) {
       const { data, error } = await fetch(
         `https://petition.parliament.uk/petitions/${petition.id}.json`
       ).then((response) => response.json());
@@ -79,13 +87,20 @@ export async function updatePetitions() {
       if (!tweets.length)
         continue
 
-      const tweetId = await updateTweet(petition.tweetid, tweets, petition.id);
+      const tweetid = await updateTweet(petition.tweetid, tweets, petition.id);
 
-      petition.tweetId = tweetId;
-      await pgClient.query(
-        'UPDATE petition SET "tweetid" = $1, response = $2, debate = $3 WHERE id = $4',
-        [petition.tweetId, petition.response, petition.debate, petition.id]
-      );
+      petition.tweetid = tweetid;
+      await dbClient.petition.update(
+        {
+          where: {
+            id: petition.id,
+          },
+          data: {
+            ...petition
+          }
+        }
+      )
+      
       updatesMade++;
 
       if (updatesMade >= UPDATE_LIMIT) {
@@ -103,11 +118,11 @@ export async function updatePetitions() {
 }
 
 async function updateTweet(
-  tweetId: string,
+  tweetId: string | null,
   tweetBodies: string[],
   petitionId: string
 ) {
-  let tweetConfirmation = tweetId;
+  let tweetConfirmation = tweetId ?? "";
 
   for (const body of tweetBodies) {
     options.form.in_reply_to_status_id = tweetConfirmation;
@@ -119,10 +134,13 @@ async function updateTweet(
         .toISOString()
         .replace("T", " ")
         .replace("Z", "");
-      return pgClient.query(
-        "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
-        [timestamp, petitionId, tweetConfirmation]
-      );
+      return dbClient.tweets.create({
+        data: {
+          time: timestamp,
+          id: petitionId,
+          tweetid: tweetConfirmation
+        }
+      });
     });
   }
 

@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model petition {
+  id              String    @id(map: "petition_pk") @db.VarChar(100)
+  deadline        DateTime? @db.Timestamp(6)
+  tweetid         String?   @db.VarChar(200)
+  signature_count Int?
+  response        Boolean?
+  debate          Boolean?
+}
+
+model tweets {
+  time    DateTime? @db.Timestamp(6)
+  id      String?   @db.VarChar(100)
+  tweetid String    @id(map: "tweets_id") @db.VarChar(200)
+}
