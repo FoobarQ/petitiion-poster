@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 const petitionUrl =
   process.env.PETITION_URL || "https://petition.parliament.uk/petitions.json";
 
