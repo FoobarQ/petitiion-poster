@@ -4,17 +4,7 @@ import request from "request-promise";
 import pg from "pg";
 import { shorten } from "./utils";
 import { deletePetitionsById } from "./delete";
-
-const client = new pg.Pool({
-  user: process.env.TIMESCALE_USER || "user",
-  host: process.env.TIMESCALE_HOST || "host",
-  database: process.env.TIMESCALE_DB || "",
-  password: process.env.TIMESCALE_PASSWORD || "",
-  port: parseInt(process.env.TIMESCALE_PORT || "0"),
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+import {pgClient} from './pgClient';
 
 const UPDATE_LIMIT = process.env.UPDATE_LIMIT
   ? parseInt(process.env.UPDATE_LIMIT)
@@ -39,7 +29,7 @@ export async function updatePetitions() {
   let petitionsToDelete = [];
   try {
     console.log("Finding petitions to update");
-    const petitions = await client.query(
+    const petitions = await pgClient.query(
       "SELECT * FROM petition WHERE response = FALSE OR debate = FALSE"
     );
 
@@ -94,7 +84,7 @@ export async function updatePetitions() {
       const tweetId = await updateTweet(petition.tweetid, tweets, petition.id);
 
       petition.tweetId = tweetId;
-      await client.query(
+      await pgClient.query(
         'UPDATE petition SET "tweetid" = $1, response = $2, debate = $3 WHERE id = $4',
         [petition.tweetId, petition.response, petition.debate, petition.id]
       );
@@ -131,7 +121,7 @@ async function updateTweet(
         .toISOString()
         .replace("T", " ")
         .replace("Z", "");
-      return client.query(
+      return pgClient.query(
         "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
         [timestamp, petitionId, tweetConfirmation]
       );
