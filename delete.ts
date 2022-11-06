@@ -1,19 +1,8 @@
 import "reflect-metadata";
-import pg from "pg";
-
-const client = new pg.Pool({
-    user: process.env.TIMESCALE_USER || "user",
-    host: process.env.TIMESCALE_HOST || "host",
-    database: process.env.TIMESCALE_DB || "",
-    password: process.env.TIMESCALE_PASSWORD || "",
-    port: parseInt(process.env.TIMESCALE_PORT || "0"),
-    ssl: {
-        rejectUnauthorized: false,
-    },
-});
+import {pgClient} from './pgClient';
 
 async function getExpiredPetitionIds(): Promise<string[]> {
-    const result = await client.query(
+    const result = await pgClient.query(
         "SELECT id FROM petition WHERE deadline < now()"
     );
 
@@ -23,7 +12,7 @@ async function getExpiredPetitionIds(): Promise<string[]> {
 }
 
 export async function deletePetitionsById(ids: string[]) {
-    await client.query(
+    await pgClient.query(
         "DELETE FROM petition WHERE id = ANY($1)",
         [ids]
     );

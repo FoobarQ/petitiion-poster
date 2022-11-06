@@ -2,17 +2,8 @@ import "reflect-metadata";
 import request from "request-promise";
 import { getOpenPetitionsPageCount, getPetitions, shorten } from "./utils";
 import pg from "pg";
+import {pgClient} from './pgClient';
 
-const client = new pg.Pool({
-  user: process.env.TIMESCALE_USER || "user",
-  host: process.env.TIMESCALE_HOST || "host",
-  database: process.env.TIMESCALE_DB || "",
-  password: process.env.TIMESCALE_PASSWORD || "",
-  port: parseInt(process.env.TIMESCALE_PORT || "0"),
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
 
 const options = {
   method: "POST",
@@ -43,7 +34,7 @@ export async function createPetitions(): Promise<number | void> {
     let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
 
     for (const petition of petitions) {
-      const entity = await client.query(
+      const entity = await pgClient.query(
         "SELECT * FROM petition WHERE id = $1",
         [petition.id]
       );
@@ -79,11 +70,11 @@ export async function createPetitions(): Promise<number | void> {
           petitionEntry.id = String(petition.id);
           petitionEntry.signature_count = petition.attributes.signature_count;
 
-          client.query(
+          pgClient.query(
             "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
             [tweetTimestamp, petition.id, tweetId]
           );
-          client.query(
+          pgClient.query(
             "INSERT INTO petition VALUES ($1, $2, $3, $4, False, False)",
             [
               petitionEntry.id,
