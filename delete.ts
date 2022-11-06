@@ -1,21 +1,30 @@
-import "reflect-metadata";
-import {pgClient} from './pgClient';
+import {dbClient} from './dbClient';
 
 async function getExpiredPetitionIds(): Promise<string[]> {
-    const result = await pgClient.query(
-        "SELECT id FROM petition WHERE deadline < now()"
-    );
+    const result = await dbClient.petition.findMany({
+        select: {
+            id: true
+        },
+        where: {
+            deadline: {
+                lt: new Date()
+            }
+        }
+    })
 
-    console.log(`Found ${result.rowCount} expired petitions`);
+    console.log(`Found ${result.length} expired petitions`);
 
-    return result.rows.map(row => row.id);
+    return result.map(row => row.id);
 }
 
 export async function deletePetitionsById(ids: string[]) {
-    await pgClient.query(
-        "DELETE FROM petition WHERE id = ANY($1)",
-        [ids]
-    );
+    await dbClient.petition.deleteMany({
+        where: {
+            id: {
+                in: ids,
+            }
+        }
+    });
 
     console.log(`Deleted ${ids.length} petitions`);
 }

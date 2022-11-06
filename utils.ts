@@ -29,6 +29,7 @@ async function fixResponse(body: any): Promise<{
     for (const variable of dateVariables) {
       petition[variable] = toDate(petition[variable]);
     }
+    data.id = data.id.toString();
     data.attributes = petition;
     petitions.push(data);
   }

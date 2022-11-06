@@ -1,7 +1,6 @@
-import "reflect-metadata";
 import request from "request-promise";
 import { getOpenPetitionsPageCount, getPetitions, shorten } from "./utils";
-import {pgClient} from './pgClient';
+import {dbClient} from './dbClient';
 
 
 const options = {
@@ -33,11 +32,14 @@ export async function createPetitions(): Promise<number | void> {
     let petitions: PetitionInterface[] = (await getPetitions(page)) || [];
 
     for (const petition of petitions) {
-      const entity = await pgClient.query(
-        "SELECT * FROM petition WHERE id = $1",
-        [petition.id]
-      );
-      if (entity.rows[0]) {
+
+      const entity = await dbClient.petition.findUnique({
+        where: {
+          id: petition.id,
+        }
+      })
+
+      if (entity) {
         //already tracking this petition
         continue;
       }
@@ -69,19 +71,22 @@ export async function createPetitions(): Promise<number | void> {
           petitionEntry.id = String(petition.id);
           petitionEntry.signature_count = petition.attributes.signature_count;
 
-          pgClient.query(
-            "INSERT INTO tweets (time, id, tweetid) VALUES ($1, $2, $3)",
-            [tweetTimestamp, petition.id, tweetId]
-          );
-          pgClient.query(
-            "INSERT INTO petition VALUES ($1, $2, $3, $4, False, False)",
-            [
-              petitionEntry.id,
-              petitionEntry.deadline,
-              petitionEntry.tweetId,
-              petitionEntry.signature_count,
-            ]
-          );
+          dbClient.tweets.create({
+            data: {
+              id: petition.id,
+              time: tweetTimestamp,
+              tweetid:tweetId
+            }
+          });
+ 
+          dbClient.petition.create({
+            data: {
+              id: petitionEntry.id,
+              deadline: petitionEntry.deadline,
+              tweetid: petitionEntry.tweetId,
+              signature_count: petitionEntry.signature_count
+            }
+          });
         })
         .then(() => {
           tweetsMade++;
