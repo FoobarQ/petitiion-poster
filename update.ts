@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import fetch from "node-fetch";
 import request from "request-promise";
 import { shorten } from "./utils";
 import { deletePetitionsById } from "./delete";
