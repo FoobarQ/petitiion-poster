@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import fetch from "node-fetch";
 import request from "request-promise";
-import pg from "pg";
 import { shorten } from "./utils";
 import { deletePetitionsById } from "./delete";
 import {pgClient} from './pgClient';
